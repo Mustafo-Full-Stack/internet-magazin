@@ -74,6 +74,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
   <symbol id="phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.11 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
   <symbol id="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></symbol>
   <symbol id="send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></symbol>
   <symbol id="arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
   <symbol id="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
@@ -121,6 +122,14 @@
         <p class="text-sm text-olive mt-2"><b id="catCount" class="text-ink">3</b> <span id="catSuffix">товара в наличии</span></p>
       </div>
       <p class="hidden sm:block text-xs text-olive pb-1" data-i18n="catTip">Нажми на товар, чтобы выбрать размер и заказать</p>
+    </div>
+
+    <div class="mt-5 md:mt-8 max-w-md">
+      <div class="relative">
+        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-olive" aria-hidden="true"><use href="#search"/></svg>
+        <input id="searchInput" type="search" data-i18n-ph="searchPlaceholder" placeholder="Найти обувь…"
+               class="w-full bg-white border border-ink/15 rounded-full pl-10 pr-4 py-2.5 text-sm placeholder:text-olive focus:outline-none focus:border-ink transition-colors">
+      </div>
     </div>
 
     <div id="productGrid" class="mt-6 md:mt-8 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6"></div>
@@ -294,6 +303,7 @@ const I18N = {
     navWrite: 'Написать',
     catTitle: 'Каталог',
     catTip: 'Нажми на товар, чтобы выбрать размер и заказать',
+    searchPlaceholder: 'Найти обувь…',
 
     orderBtn: 'Заказать',
     sizeLabel: 'Размер (RU)',
@@ -315,12 +325,14 @@ const I18N = {
     toastSize: 'Открой карточку товара — там есть таблица размеров',
     orderNew: 'Новый заказ — STEP style.tj',
     orderGoods: 'Товар:', orderInfo: 'Инфо:', orderArt: 'арт.', orderSizeLabel: 'размер', orderPrice: 'Цена:', orderPhoto: 'Фото:',
-    badgeNew: 'Новинка', badgeHit: 'Хит'
+    badgeNew: 'Новинка', badgeHit: 'Хит',
+    searchEmpty: 'Ничего не найдено'
   },
   tj: {
     navWrite: 'Нависед',
     catTitle: 'Каталог',
     catTip: 'Ба мол клик кунед, то андоза интихоб карда фармоиш диҳед',
+    searchPlaceholder: 'Ҷустуҷӯи пойафзор…',
 
     orderBtn: 'Фармоиш диҳед',
     sizeLabel: 'Андоза (RU)',
@@ -342,7 +354,8 @@ const I18N = {
     toastSize: 'Варақаи молро кушоед — ҷадвали андоза дар дохили он аст',
     orderNew: 'Фармоиши нав — STEP style.tj',
     orderGoods: 'Мол:', orderInfo: 'Маълумот:', orderArt: 'арт.', orderSizeLabel: 'андоза', orderPrice: 'Нарх:', orderPhoto: 'Акс:',
-    badgeNew: 'Нав', badgeHit: 'Хит'
+    badgeNew: 'Нав', badgeHit: 'Хит',
+    searchEmpty: 'Чизе ёфт нашуд'
   }
 };
 
@@ -402,6 +415,7 @@ const PRODUCTS = [
 ];
 
 let currentProduct = null, selectedSize = null;
+let searchQ = '';
 let modalOpen = false, orderOpen = false;
 let pmGallery = [], pmIdx = 0;
 
@@ -516,12 +530,19 @@ function plural(n, one, few, many) {
 }
 
 function renderCatalog() {
-  const list = PRODUCTS;
+  const q = (searchQ || '').trim().toLowerCase();
+  const list = q ? PRODUCTS.filter(p => (
+    p.name.toLowerCase().includes(q) ||
+    p.catName.toLowerCase().includes(q) ||
+    p.desc.toLowerCase().includes(q)
+  )) : PRODUCTS;
   $('#catCount').textContent = list.length;
   $('#catSuffix').textContent = lang === 'ru'
     ? plural(list.length, 'товар в наличии', 'товара в наличии', 'товаров в наличии')
     : 'мол дар фурӯш';
-  $('#productGrid').innerHTML = list.map(cardHTML).join('');
+  $('#productGrid').innerHTML = list.length
+    ? list.map(cardHTML).join('')
+    : `<div class="col-span-full text-center text-olive text-sm py-10">${t('searchEmpty')}</div>`;
   icons();
   observeReveals();
 }
@@ -536,6 +557,9 @@ function applyLang() {
   });
   document.querySelectorAll('[data-i18n]').forEach(el => {
     el.textContent = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    el.placeholder = t(el.dataset.i18nPh);
   });
   renderCatalog();
   if (currentProduct) fillProduct(currentProduct);
@@ -850,6 +874,11 @@ function observeReveals() {
 $('#productGrid').addEventListener('click', (e) => {
   const card = e.target.closest('[data-id]');
   if (card) openProduct(+card.dataset.id);
+});
+
+$('#searchInput').addEventListener('input', (e) => {
+  searchQ = e.target.value;
+  renderCatalog();
 });
 
 $('#pmThumbs').addEventListener('click', (e) => {
