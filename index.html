@@ -125,11 +125,9 @@
 
     <div id="catFilters" class="mt-5 md:mt-8 flex flex-wrap items-center gap-2">
       <button class="cat-btn bg-ink text-cream border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="all" data-i18n="cat_all">Все</button>
-      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="sneakers" data-i18n="cat_sneakers">Кроссовки</button>
-      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="boots" data-i18n="cat_boots">Ботинки</button>
-      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="classic" data-i18n="cat_classic">Классика</button>
-      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="casual" data-i18n="cat_casual">Кэжуал</button>
-      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="outdoors" data-i18n="cat_outdoors">Аутдор</button>
+      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="new" data-i18n="cat_new">Новые</button>
+      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="expensive" data-i18n="cat_expensive">Дорогие</button>
+      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="cheap" data-i18n="cat_cheap">Дешёвые</button>
     </div>
 
     <div id="productGrid" class="mt-6 md:mt-8 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6"></div>
@@ -303,7 +301,7 @@ const I18N = {
     navWrite: 'Написать',
     catTitle: 'Каталог',
     catTip: 'Нажми на товар, чтобы выбрать размер и заказать',
-    cat_all: 'Все', cat_sneakers: 'Кроссовки', cat_boots: 'Ботинки', cat_classic: 'Классика', cat_casual: 'Кэжуал', cat_outdoors: 'Аутдор',
+    cat_all: 'Все', cat_new: 'Новые', cat_expensive: 'Дорогие', cat_cheap: 'Дешёвые',
     orderBtn: 'Заказать',
     sizeLabel: 'Размер (RU)',
     sizeTableBtn: 'Таблица размеров',
@@ -330,7 +328,7 @@ const I18N = {
     navWrite: 'Нависед',
     catTitle: 'Каталог',
     catTip: 'Ба мол клик кунед, то андоза интихоб карда фармоиш диҳед',
-    cat_all: 'Ҳама', cat_sneakers: 'Кроссовкаҳо', cat_boots: 'Ботинкаҳо', cat_classic: 'Классикӣ', cat_casual: 'Ғайрирасмӣ', cat_outdoors: 'Аутдор',
+    cat_all: 'Ҳама', cat_new: 'Нав', cat_expensive: 'Гарон', cat_cheap: 'Арзон',
     orderBtn: 'Фармоиш диҳед',
     sizeLabel: 'Андоза (RU)',
     sizeTableBtn: 'Ҷадвали андоза',
@@ -502,12 +500,19 @@ function plural(n, one, few, many) {
 }
 
 let activeCat = 'all';
+function productsForCat(cat) {
+  if (cat === 'all') return PRODUCTS;
+  if (cat === 'new') return PRODUCTS.filter(p => p.badge === 'new');
+  if (cat === 'expensive') return [...PRODUCTS].sort((a, b) => b.price - a.price);
+  if (cat === 'cheap') return [...PRODUCTS].sort((a, b) => a.price - b.price);
+  return PRODUCTS.filter(p => p.cat === cat);
+}
 function renderCatalog() {
-  if (activeCat !== 'all' && !PRODUCTS.some(p => p.cat === activeCat)) activeCat = 'all';
-  const list = activeCat === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.cat === activeCat);
+  if (activeCat !== 'all' && !productsForCat(activeCat).length) activeCat = 'all';
+  const list = productsForCat(activeCat);
   document.querySelectorAll('.cat-btn').forEach(b => {
     const cat = b.dataset.cat;
-    const n = cat === 'all' ? PRODUCTS.length : PRODUCTS.filter(p => p.cat === cat).length;
+    const n = productsForCat(cat).length;
     b.classList.toggle('hidden', n === 0);
   });
   $('#catCount').textContent = list.length;
