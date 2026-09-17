@@ -308,7 +308,7 @@ const I18N = {
     addressText: 'Душанбе, Б. Корвон, д. 10, кв. 6 (подвал)',
     deliveryText: 'Доставка по всей РТ',
     copyright: 'STEP style.tj — все права защищены',
-    toastCopy: 'Фото и текст заказа скопированы — вставь в директ (Ctrl+V)',
+    toastCopy: 'Текст заказа скопирован — вставь в директ', toastCopyCard: 'Фото и текст заказа скопированы — вставь в директ',
     toastSent: 'Заказ отправлен в {via}',
     toastSize: 'Открой карточку товара — там есть таблица размеров',
     orderNew: 'Новый заказ — STEP style.tj',
@@ -335,7 +335,7 @@ const I18N = {
     addressText: 'Душанбе, кӯч. Корвон, х. 10, ошёнаи 6 (таҳхона)',
     deliveryText: 'Дар тамоми Ҷумҳурии Тоҷикистон интиқол медиҳем',
     copyright: 'STEP style.tj — ҳама ҳуқуқҳо ҳифз шудаанд',
-    toastCopy: 'Акс ва матни фармоиш нусхабардорӣ шуд — ба директ гузоред (Ctrl+V)',
+    toastCopy: 'Матни фармоиш нусхабардорӣ шуд — ба директ гузоред', toastCopyCard: 'Акс ва матни фармоиш нусхабардорӣ шуд — ба директ гузоред',
     toastSent: 'Фармоиш ба {via} фиристода шуд',
     toastSize: 'Варақаи молро кушоед — ҷадвали андоза дар дохили он аст',
     orderNew: 'Фармоиши нав — STEP style.tj',
@@ -668,7 +668,10 @@ function wrapLines(ctx, text, maxWidth, font) {
 
 async function copyOrderCard(p, orderText) {
   const url = photoUrl(p.sku, p.seed, 1080, 1350);
-  const im = await loadImg(url);
+  let im = $('#pmImg');
+  if (!im || !im.naturalWidth || new URL(im.src, location.href).href !== new URL(url, location.href).href) {
+    im = await loadImg(url);
+  }
   const W = 1080;
   const gap = 60;
   const Himg = Math.round(W * im.naturalHeight / im.naturalWidth);
@@ -703,40 +706,41 @@ async function copyOrderCard(p, orderText) {
   return true;
 }
 
-async function copyOrderText(text) {
+function copyTextLegacy(text) {
   try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch (e) {
-    try {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed'; ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      const ok = document.execCommand('copy');
-      ta.remove();
-      return ok;
-    } catch (_) { return false; }
-  }
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select(); ta.setSelectionRange(0, ta.value.length);
+    const ok = document.execCommand('copy');
+    ta.remove();
+    return ok;
+  } catch (_) { return false; }
 }
 
 async function sendViaInstagram() {
   const text = buildOrderText(currentProduct, selectedSize);
-  let copied = false;
-  try {
-    copied = await copyOrderCard(currentProduct, text);
-  } catch (e) {
-    copied = await copyOrderText(text);
+  let copied = false, hadImage = false;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try { await navigator.clipboard.writeText(text); copied = true; }
+    catch (e) { copied = copyTextLegacy(text); }
+  } else {
+    copied = copyTextLegacy(text);
   }
+  try {
+    await copyOrderCard(currentProduct, text);
+    hadImage = true;
+  } catch (e) { }
   window.open(`https://ig.me/m/${INSTAGRAM_USER}`, '_blank');
-  finishOrder('Instagram', copied);
+  finishOrder('Instagram', copied, hadImage);
 }
 
-function finishOrder(via, copied = false) {
+function finishOrder(via, copiedText = false, hadImage = false) {
   closeOrderModal();
-  if (via === 'Instagram' && copied) {
-    toast(t('toastCopy'), 'clipboard-check');
+  if (via === 'Instagram' && (copiedText || hadImage)) {
+    toast(hadImage ? t('toastCopyCard') : t('toastCopy'), 'clipboard-check');
   } else {
     toast(t('toastSent').replace('{via}', via), 'check');
   }
