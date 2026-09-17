@@ -187,7 +187,7 @@
         <svg class="w-7 h-7" aria-hidden="true"><use href="#send"/></svg>
       </div>
       <h3 class="font-display font-bold text-2xl mt-4 leading-tight" data-i18n="pmOrderTitle">Как отправить заказ?</h3>
-      <p id="orderSubtext" class="text-ink/60 text-sm mt-2" data-i18n="orderSubtext">Сообщение с товаром, размером и ценой подготовится автоматически — выбери мессенджер:</p>
+      <p id="orderSubtext" class="text-ink/60 text-sm mt-2" data-i18n="orderSubtext">Сообщение с товаром, размером и ценой подготовится автоматически — откроется чат WhatsApp:</p>
 
       <div class="mt-6 space-y-3">
         <button id="sendWaBtn" class="group w-full flex items-center gap-4 rounded-2xl border border-ink/10 bg-white p-4 text-left hover:border-[#25D366] hover:shadow-md transition-all">
@@ -200,6 +200,7 @@
           </span>
           <svg class="w-5 h-5 text-olive group-hover:text-[#1DA851] group-hover:translate-x-1 transition-all" aria-hidden="true"><use href="#arrow-right"/></svg>
         </button>
+        <!-- Instagram-вариант заказа отключён. Вернуть при необходимости:
         <button id="sendIgBtn" class="group w-full flex items-center gap-4 rounded-2xl border border-ink/10 bg-white p-4 text-left hover:border-clay hover:shadow-md transition-all">
           <span class="w-12 h-12 rounded-xl bg-clay/10 text-clay grid place-items-center shrink-0 transition-transform group-hover:scale-110">
             <svg class="w-6 h-6" aria-hidden="true"><use href="#ig"/></svg>
@@ -210,6 +211,7 @@
           </span>
           <svg class="w-5 h-5 text-olive group-hover:text-clay group-hover:translate-x-1 transition-all" aria-hidden="true"><use href="#arrow-right"/></svg>
         </button>
+        -->
       </div>
     </div>
   </div>
@@ -308,7 +310,7 @@ const I18N = {
     sizeTableText: 'Длина стельки: 39 — 25,0 см · 40 — 25,5 · 41 — 26,5 · 42 — 27,0 · 43 — 28,0 · 44 — 28,5 · 45 — 29,0. Если сомневаетесь между двумя — берите больший.',
     sizeError: 'Сначала выберите размер',
     pmOrderTitle: 'Как отправить заказ?',
-    orderSubtext: 'Сообщение с товаром, размером и ценой подготовится автоматически — выбери мессенджер:',
+    orderSubtext: 'Сообщение с товаром, размером и ценой подготовится автоматически — откроется чат WhatsApp:',
     waSub: 'Откроется чат с готовым заказом',
     igSub: 'Откроется директ, текст скопируется',
     contactsTitle: 'Контакты',
@@ -335,7 +337,7 @@ const I18N = {
     sizeTableText: 'Дарозии таг: 39 — 25,0 см · 40 — 25,5 · 41 — 26,5 · 42 — 27,0 · 43 — 28,0 · 44 — 28,5 · 45 — 29,0. Агар байни ду андоза шубҳа доред — андозаи калонтарро гиред.',
     sizeError: 'Аввал андозаро интихоб кунед',
     pmOrderTitle: 'Фармоишро бо кадом барнома мефиристед?',
-    orderSubtext: 'Паём бо номи мол, андоза ва нарх худ ба худ омода мешавад — мессенҷерро интихоб кунед:',
+    orderSubtext: 'Паём бо номи мол, андоза ва нарх худ ба худ омода мешавад — чати WhatsApp кушода мешавад:',
     waSub: 'Чати тайёр бо фармоиш кушода мешавад',
     igSub: 'Директ кушода мешавад, матн нусхабардорӣ мешавад',
     contactsTitle: 'Тамос',
@@ -648,6 +650,11 @@ function sendViaWhatsApp() {
   finishOrder('WhatsApp');
 }
 
+/* ============================================================
+   ЗАКАЗ ЧЕРЕЗ INSTAGRAM — отключён (только WhatsApp).
+   Код сохранён на случай, если понадобится вернуть IG.
+   ============================================================ */
+/*
 function loadImg(url) {
   return new Promise((res, rej) => {
     const im = new Image();
@@ -730,7 +737,7 @@ async function shareOrderCard(p, orderText) {
     a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 30000);
     toast(t('toastPhoto'), 'check');
-  } catch (e) { /* "Поделиться" отменено или не поддерживается — текст уже в буфере */ }
+  } catch (e) {}
 }
 
 function copyTextLegacy(text) {
@@ -762,6 +769,7 @@ async function sendViaInstagram() {
   finishOrder('Instagram', copied);
   shareOrderCard(currentProduct, text);
 }
+*/
 
 function finishOrder(via, copiedText = false) {
   closeOrderModal();
@@ -842,7 +850,7 @@ $('#pmodalClose').addEventListener('click', closeProduct);
 $('#pmodalOverlay').addEventListener('click', closeProduct);
 
 $('#sendWaBtn').addEventListener('click', sendViaWhatsApp);
-$('#sendIgBtn').addEventListener('click', sendViaInstagram);
+// $('#sendIgBtn').addEventListener('click', sendViaInstagram); // IG-заказ отключён
 $('#orderCloseBtn').addEventListener('click', closeOrderModal);
 $('#orderOverlay').addEventListener('click', closeOrderModal);
 
