@@ -123,13 +123,6 @@
       <p class="hidden sm:block text-xs text-olive pb-1" data-i18n="catTip">Нажми на товар, чтобы выбрать размер и заказать</p>
     </div>
 
-    <div id="catFilters" class="mt-5 md:mt-8 flex flex-wrap items-center gap-2">
-      <button class="cat-btn bg-ink text-cream border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="all" data-i18n="cat_all">Все</button>
-      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="new" data-i18n="cat_new">Новые</button>
-      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="expensive" data-i18n="cat_expensive">Дорогие</button>
-      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="cheap" data-i18n="cat_cheap">Дешёвые</button>
-    </div>
-
     <div id="productGrid" class="mt-6 md:mt-8 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6"></div>
   </section>
 </main>
@@ -301,7 +294,7 @@ const I18N = {
     navWrite: 'Написать',
     catTitle: 'Каталог',
     catTip: 'Нажми на товар, чтобы выбрать размер и заказать',
-    cat_all: 'Все', cat_new: 'Новые', cat_expensive: 'Дорогие', cat_cheap: 'Дешёвые',
+
     orderBtn: 'Заказать',
     sizeLabel: 'Размер (RU)',
     sizeTableBtn: 'Таблица размеров',
@@ -328,7 +321,7 @@ const I18N = {
     navWrite: 'Нависед',
     catTitle: 'Каталог',
     catTip: 'Ба мол клик кунед, то андоза интихоб карда фармоиш диҳед',
-    cat_all: 'Ҳама', cat_new: 'Нав', cat_expensive: 'Киммат', cat_cheap: 'Арзон',
+
     orderBtn: 'Фармоиш диҳед',
     sizeLabel: 'Андоза (RU)',
     sizeTableBtn: 'Ҷадвали андоза',
@@ -522,30 +515,12 @@ function plural(n, one, few, many) {
   return many;
 }
 
-let activeCat = 'all';
-function productsForCat(cat) {
-  if (cat === 'all') return PRODUCTS;
-  if (cat === 'new') return PRODUCTS.filter(p => p.badge === 'new');
-  if (cat === 'expensive') return [...PRODUCTS].sort((a, b) => b.price - a.price);
-  if (cat === 'cheap') return [...PRODUCTS].sort((a, b) => a.price - b.price);
-  return PRODUCTS.filter(p => p.cat === cat);
-}
 function renderCatalog() {
-  if (activeCat !== 'all' && !productsForCat(activeCat).length) activeCat = 'all';
-  const list = productsForCat(activeCat);
-  document.querySelectorAll('.cat-btn').forEach(b => {
-    const cat = b.dataset.cat;
-    const n = productsForCat(cat).length;
-    b.classList.toggle('hidden', n === 0);
-  });
+  const list = PRODUCTS;
   $('#catCount').textContent = list.length;
-  $('#catSuffix').textContent = activeCat === 'all'
-    ? (lang === 'ru'
-        ? plural(list.length, 'товар в наличии', 'товара в наличии', 'товаров в наличии')
-        : 'мол дар фурӯш')
-    : (lang === 'ru'
-        ? `из ${PRODUCTS.length} в каталоге`
-        : `аз ${PRODUCTS.length} дар каталог`);
+  $('#catSuffix').textContent = lang === 'ru'
+    ? plural(list.length, 'товар в наличии', 'товара в наличии', 'товаров в наличии')
+    : 'мол дар фурӯш';
   $('#productGrid').innerHTML = list.map(cardHTML).join('');
   icons();
   observeReveals();
@@ -875,19 +850,6 @@ function observeReveals() {
 $('#productGrid').addEventListener('click', (e) => {
   const card = e.target.closest('[data-id]');
   if (card) openProduct(+card.dataset.id);
-});
-
-$('#catFilters').addEventListener('click', (e) => {
-  const b = e.target.closest('.cat-btn');
-  if (!b || b.dataset.cat === activeCat) return;
-  activeCat = b.dataset.cat;
-  document.querySelectorAll('.cat-btn').forEach(x => {
-    x.classList.remove('bg-ink', 'text-cream', 'border-ink');
-    x.classList.add('bg-white', 'text-ink/60', 'border-ink/15', 'hover:text-ink', 'hover:border-ink');
-  });
-  b.classList.add('bg-ink', 'text-cream', 'border-ink');
-  b.classList.remove('bg-white', 'text-ink/60', 'border-ink/15', 'hover:text-ink', 'hover:border-ink');
-  renderCatalog();
 });
 
 $('#pmThumbs').addEventListener('click', (e) => {
