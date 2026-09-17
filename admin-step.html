@@ -36,10 +36,74 @@
   :root { color-scheme: light; }
   body { -webkit-tap-highlight-color: transparent; }
   ::selection { background:#D9541E; color:#F3EFE6; }
-  .toast { transform:translateY(16px); opacity:0; transition:all .4s cubic-bezier(.22,1,.36,1); }
-  .toast.show { transform:none; opacity:1; }
-  .tab-btn.active { background-color:#1B1611; color:#F3EFE6; }
-  .bottom-nav-btn.active { color:#D9541E; }
+
+  /* Плавные анимации и переходы */
+  .tab-content {
+    animation: tabFadeIn .42s cubic-bezier(.16,1,.3,1) forwards;
+  }
+  @keyframes tabFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .toast {
+    transform: translateY(-16px) scale(0.96);
+    opacity: 0;
+    transition: transform .45s cubic-bezier(.16,1,.3,1), opacity .45s ease;
+  }
+  .toast.show {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  .tab-btn {
+    transition: all .35s cubic-bezier(.16,1,.3,1);
+  }
+  .tab-btn.active {
+    background-color: #1B1611;
+    color: #F3EFE6;
+  }
+
+  .bottom-nav-btn {
+    transition: color .2s ease, transform .2s ease;
+  }
+  .bottom-nav-btn.active {
+    color: #D9541E;
+  }
+
+  .admin-card {
+    transition: transform .38s cubic-bezier(.16,1,.3,1), box-shadow .38s cubic-bezier(.16,1,.3,1), border-color .38s ease;
+  }
+  .admin-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px -10px rgba(27,22,17,0.12);
+  }
+
+  .modal-overlay {
+    opacity: 0;
+    transition: opacity .42s cubic-bezier(.16,1,.3,1);
+  }
+  .modal-overlay.active {
+    opacity: 1;
+  }
+
+  .modal-container {
+    transform: scale(0.95) translateY(8px);
+    opacity: 0;
+    transition: transform .42s cubic-bezier(.16,1,.3,1), opacity .42s ease;
+  }
+  .modal-container.active {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  .admin-lang-btn {
+    transition: all .35s cubic-bezier(.16,1,.3,1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
 </style>
 </head>
 
@@ -63,44 +127,52 @@
 </svg>
 
 <!-- ========================= ЭКРАН ВХОДА (LOGIN) ========================= -->
-<div id="loginScreen" class="fixed inset-0 z-50 bg-cream flex items-center justify-center p-4">
-  <div class="w-full max-w-sm bg-white rounded-3xl p-6 md:p-8 border border-ink/10 shadow-2xl">
-    <div class="text-center">
+<div id="loginScreen" class="fixed inset-0 z-50 bg-cream/95 backdrop-blur-md flex items-center justify-center p-4">
+  <div class="w-full max-w-sm bg-white rounded-3xl p-6 md:p-8 border border-ink/10 shadow-2xl relative">
+    
+    <!-- Переключатель языка на экране логина -->
+    <div class="absolute top-5 right-5">
+      <div class="flex items-center rounded-full border border-ink/15 overflow-hidden text-[11px] font-bold select-none p-0.5 bg-sand/30" role="group">
+        <button type="button" class="admin-lang-btn px-2.5 py-1 rounded-full text-ink/60" data-lang="tj">ТҶ</button>
+        <button type="button" class="admin-lang-btn px-2.5 py-1 rounded-full text-ink/60" data-lang="ru">RU</button>
+      </div>
+    </div>
+
+    <div class="text-center pt-2">
       <img src="uploads/logo/Step_Style_header.png" alt="STEP style.tj" class="h-10 mx-auto w-auto">
       <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sand/60 text-[11px] font-bold uppercase tracking-wider text-olive mt-3">
-        <svg class="w-3.5 h-3.5 text-clay"><use href="#lock"/></svg> Панели мудир
+        <svg class="w-3.5 h-3.5 text-clay"><use href="#lock"/></svg> <span data-i18n="loginBadge">Панели мудир</span>
       </div>
-      <h1 class="font-display font-bold text-xl md:text-2xl mt-3">Вуруд ба система</h1>
-      <p class="text-xs text-olive mt-1">Лутфан номи корбар ва кодро ворид намоед</p>
+      <h1 class="font-display font-bold text-xl md:text-2xl mt-3" data-i18n="loginTitle">Вуруд ба низом</h1>
     </div>
 
     <form id="loginForm" class="mt-6 space-y-4">
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5">Номи корбар (Логин)</label>
-        <input id="loginUser" type="text" required placeholder="Firdavs" autocomplete="username"
+        <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5" data-i18n="loginUserLabel">Номи корбар (Логин)</label>
+        <input id="loginUser" type="text" required autocomplete="username"
                class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-ink transition-colors">
       </div>
 
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5">Коди махфӣ (Парол)</label>
+        <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5" data-i18n="loginCodeLabel">Рамзи махфӣ (Парол)</label>
         <input id="loginCode" type="password" required placeholder="••••" autocomplete="current-password"
                class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm font-semibold tracking-widest focus:outline-none focus:border-ink transition-colors">
       </div>
 
       <div class="flex items-center gap-2 pt-1">
         <input id="rememberMe" type="checkbox" checked class="w-4 h-4 rounded border-ink/20 text-ink focus:ring-0">
-        <label for="rememberMe" class="text-xs text-ink/70 select-none">Дар ин телефон дар хотир нигоҳ дошта шавад</label>
+        <label for="rememberMe" class="text-xs text-ink/70 select-none cursor-pointer" data-i18n="rememberMe">Дар ин дастгоҳ дар хотир нигоҳ дошта шавад</label>
       </div>
 
       <p id="loginError" class="hidden text-clay text-xs font-semibold text-center pt-1"></p>
 
-      <button type="submit" class="w-full bg-ink text-cream font-semibold rounded-xl py-3.5 hover:bg-clay transition-colors flex items-center justify-center gap-2 text-sm shadow-md">
-        <svg class="w-4 h-4"><use href="#lock"/></svg> Ворид шудан
+      <button type="submit" class="w-full bg-ink text-cream font-semibold rounded-xl py-3.5 hover:bg-clay transition-all duration-300 flex items-center justify-center gap-2 text-sm shadow-md active:scale-[0.99]">
+        <svg class="w-4 h-4"><use href="#lock"/></svg> <span data-i18n="loginBtn">Ворид шудан</span>
       </button>
 
       <div class="text-center pt-2">
         <a href="/" class="text-xs text-olive hover:text-clay inline-flex items-center gap-1 transition-colors">
-          <svg class="w-3.5 h-3.5"><use href="#arrow-left"/></svg> Бозгашт ба мағоза
+          <svg class="w-3.5 h-3.5"><use href="#arrow-left"/></svg> <span data-i18n="backToStore">Бозгашт ба мағоза</span>
         </a>
       </div>
     </form>
@@ -109,26 +181,33 @@
 
 <!-- ========================= ШАПКА АДМИНКИ ========================= -->
 <header id="adminHeader" class="sticky top-0 z-40 bg-cream/90 backdrop-blur-md border-b border-ink/10">
-  <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+  <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
     <div class="flex items-center gap-3">
-      <a href="/" class="flex items-center" title="Ба мағоза">
+      <a href="/" class="flex items-center" title="STEP style.tj">
         <img src="uploads/logo/Step_Style_header.png" alt="STEP" class="h-8 w-auto">
       </a>
-      <span class="text-[10px] bg-ink text-cream font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Админ</span>
+      <span class="text-[10px] bg-ink text-cream font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider" data-i18n="adminBadge">Мудир</span>
     </div>
 
     <!-- Навигация для ПК -->
     <nav class="hidden md:flex items-center gap-1 bg-sand/50 p-1 rounded-2xl border border-ink/10 text-xs font-bold">
-      <button class="tab-btn px-4 py-2 rounded-xl transition-colors active" data-tab="products">Молҳо</button>
-      <button class="tab-btn px-4 py-2 rounded-xl transition-colors" data-tab="new-product">+ Иловаи мол</button>
-      <button class="tab-btn px-4 py-2 rounded-xl transition-colors" data-tab="stats">Омор ва Даромад</button>
-      <button class="tab-btn px-4 py-2 rounded-xl transition-colors" data-tab="notes">Қайдҳо</button>
+      <button class="tab-btn px-4 py-2 rounded-xl active" data-tab="products" data-i18n="tabProducts">Молҳо</button>
+      <button class="tab-btn px-4 py-2 rounded-xl" data-tab="new-product" data-i18n="tabNewProduct">+ Иловаи мол</button>
+      <button class="tab-btn px-4 py-2 rounded-xl" data-tab="stats" data-i18n="tabStats">Омор ва даромад</button>
+      <button class="tab-btn px-4 py-2 rounded-xl" data-tab="notes" data-i18n="tabNotes">Қайдҳо</button>
     </nav>
 
-    <div class="flex items-center gap-3">
-      <span class="text-xs font-bold text-olive hidden sm:inline">👤 <span id="currentUserName">Фирдавс</span></span>
-      <button id="logoutBtn" title="Баромадан аз система" class="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-full border border-ink/15 hover:bg-ink hover:text-cream transition-colors text-ink/70">
-        <svg class="w-3.5 h-3.5"><use href="#logout"/></svg> <span class="hidden sm:inline">Баромадан</span>
+    <div class="flex items-center gap-2.5 sm:gap-3">
+      <!-- Переключатель языка ТҶ / RU -->
+      <div id="adminLangSwitch" class="flex items-center rounded-full border border-ink/15 overflow-hidden text-xs font-bold select-none p-0.5 bg-sand/30" role="group" aria-label="Язык / Забон">
+        <button type="button" class="admin-lang-btn px-2.5 py-1.5 rounded-full text-ink/60" data-lang="tj" aria-label="Тоҷикӣ">ТҶ</button>
+        <button type="button" class="admin-lang-btn px-2.5 py-1.5 rounded-full text-ink/60" data-lang="ru" aria-label="Русский">RU</button>
+      </div>
+
+      <span class="text-xs font-bold text-olive hidden sm:inline">👤 <span id="currentUserName" data-i18n="adminBadge">Мудир</span></span>
+
+      <button id="logoutBtn" title="Баромадан" class="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border border-ink/15 hover:bg-ink hover:text-cream transition-colors text-ink/70">
+        <svg class="w-3.5 h-3.5"><use href="#logout"/></svg> <span class="hidden sm:inline" data-i18n="logout">Баромадан</span>
       </button>
     </div>
   </div>
@@ -141,19 +220,19 @@
   <section id="tab-products" class="tab-content">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6">
       <div>
-        <h1 class="font-display font-extrabold text-2xl md:text-3xl">Идоракунии молҳо</h1>
-        <p class="text-xs text-olive mt-1">Ҳамагӣ молҳо дар фурӯш: <b id="totalProdCount" class="text-ink">0</b></p>
+        <h1 class="font-display font-extrabold text-2xl md:text-3xl" data-i18n="manageProductsTitle">Идоракунии молҳо</h1>
+        <p class="text-xs text-olive mt-1"><span data-i18n="totalProducts">Ҳамагӣ мол дар фурӯш:</span> <b id="totalProdCount" class="text-ink">0</b></p>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="switchTab('new-product')" class="bg-clay text-cream text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-ink transition-colors flex items-center gap-1.5 shadow-sm">
-          <svg class="w-4 h-4"><use href="#plus"/></svg> Иловаи моли нав
+        <button onclick="switchTab('new-product')" class="bg-clay text-cream text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-ink transition-all duration-300 flex items-center gap-1.5 shadow-sm active:scale-[0.98]">
+          <svg class="w-4 h-4"><use href="#plus"/></svg> <span data-i18n="addNewBtn">Иловаи моли нав</span>
         </button>
       </div>
     </div>
 
     <!-- Поиск -->
     <div class="mb-5 max-w-md">
-      <input id="adminSearchInput" type="search" placeholder="Ҷустуҷӯи мол аз рӯи ном ё бренд…"
+      <input id="adminSearchInput" type="search" data-i18n-ph="searchProductPh" placeholder="Ҷустуҷӯ аз рӯи ном ё артикул…"
              class="w-full bg-white border border-ink/15 rounded-xl px-4 py-2.5 text-sm placeholder:text-olive focus:outline-none focus:border-ink transition-colors shadow-sm">
     </div>
 
@@ -167,10 +246,10 @@
     <div class="max-w-2xl mx-auto bg-white rounded-3xl p-5 md:p-8 border border-ink/10 shadow-sm">
       <div class="flex items-center justify-between border-b border-ink/10 pb-4 mb-6">
         <div>
-          <h2 id="formTitle" class="font-display font-extrabold text-xl md:text-2xl">Иловаи моли нав</h2>
-          <p class="text-xs text-olive mt-0.5">Ҳамаи майдонҳоро пур кунед, то карточка дар мағоза пайдо шавад</p>
+          <h2 id="formTitle" class="font-display font-extrabold text-xl md:text-2xl" data-i18n="formTitleAdd">Иловаи моли нав</h2>
+          <p class="text-xs text-olive mt-0.5" data-i18n="formSub">Майдонҳои лозимаро пур кунед, то мол дар мағоза пайдо шавад</p>
         </div>
-        <button type="button" onclick="resetProductForm(); switchTab('products')" class="text-olive hover:text-ink text-xs font-semibold">
+        <button type="button" onclick="resetProductForm(); switchTab('products')" class="text-olive hover:text-ink text-xs font-semibold transition-colors" data-i18n="cancel">
           Бекор кардан
         </button>
       </div>
@@ -181,27 +260,27 @@
         <!-- Название бренда и модели -->
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5">
-            Номи бренд ва модел <span class="text-clay">*</span>
+            <span data-i18n="prodNameLabel">Номи мол (бренд ва модел)</span> <span class="text-clay">*</span>
           </label>
-          <input id="prodName" type="text" required placeholder="Мисол: AXEL Casual Black ё Air Max 90"
-                 class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-ink">
+          <input id="prodName" type="text" required data-i18n-ph="prodNamePh" placeholder="Мисол: AXEL Casual Black ё Air Max"
+                 class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-ink transition-colors">
         </div>
 
         <!-- Категория и Артикул -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5">Категория</label>
-            <select id="prodCat" class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-ink">
-              <option value="sneakers">Кроссовкаҳо (Кроссовки)</option>
-              <option value="outdoors">Аутдор (Треккинг / Варзишӣ)</option>
-              <option value="casual">Кэжуал (Рӯзмарра)</option>
-              <option value="classic">Классикӣ</option>
+            <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5" data-i18n="catLabel">Категория</label>
+            <select id="prodCat" class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-ink transition-colors">
+              <option value="sneakers" data-i18n-opt="catSneakers">Кроссовкаҳо (Кроссовки)</option>
+              <option value="outdoors" data-i18n-opt="catOutdoors">Аутдор (Сайёҳӣ / Треккинг)</option>
+              <option value="casual" data-i18n-opt="catCasual">Кэжуал (Ҳамарӯза)</option>
+              <option value="classic" data-i18n-opt="catClassic">Классикӣ (Классика)</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5">Артикул (SKU)</label>
+            <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5" data-i18n="skuLabel">Артикул (SKU)</label>
             <input id="prodSku" type="text" placeholder="STP-09"
-                   class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-ink">
+                   class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-ink transition-colors">
           </div>
         </div>
 
@@ -209,22 +288,22 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5">
-              Нарх (смн) <span class="text-clay">*</span>
+              <span data-i18n="priceLabel">Нарх (смн)</span> <span class="text-clay">*</span>
             </label>
             <input id="prodPrice" type="number" required min="1" placeholder="350"
-                   class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-ink">
+                   class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:border-ink transition-colors">
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5">Нархи пештара (тафриқа)</label>
-            <input id="prodOldPrice" type="number" min="1" placeholder="420 (ихтиёрӣ)"
-                   class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ink">
+            <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5" data-i18n="oldPriceLabel">Нархи пештара (агар тахфиф бошад)</label>
+            <input id="prodOldPrice" type="number" min="1" data-i18n-ph="oldPricePh" placeholder="ихтиёрӣ"
+                   class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ink transition-colors">
           </div>
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5">Нишон (Бейдж)</label>
-            <select id="prodBadge" class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-ink">
-              <option value="">Бе нишон</option>
-              <option value="new">Нав (Новинка)</option>
-              <option value="hit">Хит (Бестселлер)</option>
+            <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5" data-i18n="badgeLabel">Нишон (Бейдж)</label>
+            <select id="prodBadge" class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-ink transition-colors">
+              <option value="" data-i18n-opt="badgeNone">Бе нишон</option>
+              <option value="new" data-i18n-opt="badgeNew">Нав (Новинка)</option>
+              <option value="hit" data-i18n-opt="badgeHit">Хит (Бестселлер)</option>
             </select>
           </div>
         </div>
@@ -232,68 +311,68 @@
         <!-- Размеры -->
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5">
-            Андозаҳо (Размеры) <span class="text-clay">*</span>
+            <span data-i18n="sizesLabel">Андозаҳо</span> <span class="text-clay">*</span>
           </label>
           <div class="flex flex-wrap gap-2 mb-2">
             <button type="button" onclick="setPresetSizes([30,31,32,33,34,35])" class="text-xs bg-sand/70 hover:bg-sand px-3 py-1.5 rounded-lg font-semibold transition-colors">
-              Пресет: 30 - 35
+              <span data-i18n="preset">Маҷмӯа:</span> 30 - 35
             </button>
             <button type="button" onclick="setPresetSizes([39,40,41,42,43])" class="text-xs bg-sand/70 hover:bg-sand px-3 py-1.5 rounded-lg font-semibold transition-colors">
-              Пресет: 39 - 43
+              <span data-i18n="preset">Маҷмӯа:</span> 39 - 43
             </button>
             <button type="button" onclick="setPresetSizes([39,40,41,42,43,44])" class="text-xs bg-sand/70 hover:bg-sand px-3 py-1.5 rounded-lg font-semibold transition-colors">
-              Пресет: 39 - 44
+              <span data-i18n="preset">Маҷмӯа:</span> 39 - 44
             </button>
             <button type="button" onclick="setPresetSizes([40,41,42,43,44,45])" class="text-xs bg-sand/70 hover:bg-sand px-3 py-1.5 rounded-lg font-semibold transition-colors">
-              Пресет: 40 - 45
+              <span data-i18n="preset">Маҷмӯа:</span> 40 - 45
             </button>
           </div>
-          <input id="prodSizes" type="text" required placeholder="Мисол: 39 40 41 42 43 44 (бо фосила ё вергул)"
-                 class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-ink">
-          <p class="text-[11px] text-olive mt-1">Шумо метавонед ҳар гуна андозаҳоро бо фосила нависед (масалан: 30 31 32 ё 39 40 41 42 43)</p>
+          <input id="prodSizes" type="text" required placeholder="39 40 41 42 43 44"
+                 class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:border-ink transition-colors">
+          <p class="text-[11px] text-olive mt-1" data-i18n="sizesHint">Андозаҳоро бо фосила ё вергул ворид кунед (масалан: 39 40 41 42 43)</p>
         </div>
 
-        <!-- Основная информация (Описание) -->
+        <!-- Описание товара -->
         <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5">
-            Маълумоти умумӣ (Тавсифи мол)
+          <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1.5" data-i18n="descLabel">
+            Тавсифи мол (Маълумоти умумӣ)
           </label>
-          <textarea id="prodDesc" rows="3" placeholder="Мисол: Кроссовкаи сабук барои варзиш, сайругашт ва истифодаи рӯзмарра..."
-                    class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ink leading-relaxed"></textarea>
+          <textarea id="prodDesc" rows="3" data-i18n-ph="descPh" placeholder="Мисол: Кроссовкаи сабук барои варзиш ва сайругашт..."
+                    class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-ink leading-relaxed transition-colors"></textarea>
         </div>
 
-        <!-- 5 разделов с галочками (Дополнительная информация) -->
+        <!-- Характеристики (без паррандаҳо!) -->
         <div class="border border-ink/10 rounded-2xl p-4 bg-sand/20">
           <div class="flex items-center justify-between mb-2">
-            <label class="block text-xs font-bold uppercase tracking-wider text-ink">
-              ✅ Маълумоти иловагӣ бо паррандаҳо (Хусусиятҳо - то 5 банд)
+            <label class="block text-xs font-bold uppercase tracking-wider text-ink" data-i18n="specsLabel">
+              Хусусиятҳои асосӣ (бо аломати ✅, то 5 банд)
             </label>
-            <button type="button" onclick="loadDefaultSpecs()" class="text-[11px] text-clay hover:underline font-bold">
-              Шаблони тайёр
+            <button type="button" onclick="loadDefaultSpecs()" class="text-[11px] text-clay hover:underline font-bold transition-colors" data-i18n="specsTemplateBtn">
+              Намунаи тайёр
             </button>
           </div>
-          <p class="text-[11px] text-olive mb-3">Дар сайти асосӣ ин сатрҳо бо аломати ✅ зебо намоиш дода мешаванд:</p>
+          <p class="text-[11px] text-olive mb-3" data-i18n="specsHint">Дар сайти асосӣ ин бандҳо бо аломати ✅ зебо намоиш дода мешаванд:</p>
 
           <div class="space-y-2">
             <div class="flex items-center gap-2">
               <span class="w-6 text-center text-clay font-bold text-xs">1.</span>
-              <input id="spec1" type="text" placeholder="Сохти сабук — тамоми рӯз бароҳат" class="flex-1 bg-white border border-ink/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-ink">
+              <input id="spec1" type="text" class="flex-1 bg-white border border-ink/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-ink transition-colors">
             </div>
             <div class="flex items-center gap-2">
               <span class="w-6 text-center text-clay font-bold text-xs">2.</span>
-              <input id="spec2" type="text" placeholder="Рӯйпӯши матоии нафасгузар" class="flex-1 bg-white border border-ink/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-ink">
+              <input id="spec2" type="text" class="flex-1 bg-white border border-ink/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-ink transition-colors">
             </div>
             <div class="flex items-center gap-2">
               <span class="w-6 text-center text-clay font-bold text-xs">3.</span>
-              <input id="spec3" type="text" placeholder="Кафи амортизатсионии мулоим" class="flex-1 bg-white border border-ink/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-ink">
+              <input id="spec3" type="text" class="flex-1 bg-white border border-ink/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-ink transition-colors">
             </div>
             <div class="flex items-center gap-2">
               <span class="w-6 text-center text-clay font-bold text-xs">4.</span>
-              <input id="spec4" type="text" placeholder="Кафи рельефӣ барои устуворӣ" class="flex-1 bg-white border border-ink/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-ink">
+              <input id="spec4" type="text" class="flex-1 bg-white border border-ink/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-ink transition-colors">
             </div>
             <div class="flex items-center gap-2">
               <span class="w-6 text-center text-clay font-bold text-xs">5.</span>
-              <input id="spec5" type="text" placeholder="Ранг: кабуди торик бо каф сафед" class="flex-1 bg-white border border-ink/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-ink">
+              <input id="spec5" type="text" class="flex-1 bg-white border border-ink/15 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-ink transition-colors">
             </div>
           </div>
         </div>
@@ -302,18 +381,18 @@
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <label class="block text-xs font-bold uppercase tracking-wider text-olive">
-              Аксҳои мол (аз 1 то 6 акс) <span class="text-clay">*</span>
+              <span data-i18n="photosLabel">Аксҳои мол (аз 1 то 6 акс)</span> <span class="text-clay">*</span>
             </label>
             <span id="photoCountBadge" class="text-xs font-bold text-olive">0 / 6 интихоб шуд</span>
           </div>
 
           <!-- Кнопка добавления фото -->
-          <div class="relative border-2 border-dashed border-ink/20 rounded-2xl p-6 text-center hover:border-ink transition-colors bg-sand/10">
+          <div class="relative border-2 border-dashed border-ink/20 rounded-2xl p-6 text-center hover:border-ink transition-colors bg-sand/10 cursor-pointer">
             <input id="photoFileInput" type="file" accept="image/*" multiple class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
             <div class="pointer-events-none">
               <svg class="w-8 h-8 text-olive mx-auto mb-2"><use href="#image"/></svg>
-              <p class="text-xs font-bold text-ink">Аксҳоро аз галерея ё камера интихоб кунед</p>
-              <p class="text-[11px] text-olive mt-0.5">Акси аввал — сурати асосии мол мешавад (то 6 акс)</p>
+              <p class="text-xs font-bold text-ink" data-i18n="photosUploadText">Аксҳоро аз галерея ё камера интихоб кунед</p>
+              <p class="text-[11px] text-olive mt-0.5" data-i18n="photosUploadHint">Акси якум сурати асосии мол мегардад (то 6 акс)</p>
             </div>
           </div>
 
@@ -323,8 +402,8 @@
 
         <!-- Кнопка сохранения -->
         <div class="pt-4">
-          <button id="saveProdBtn" type="submit" class="w-full bg-ink text-cream font-bold rounded-2xl py-4 hover:bg-clay transition-colors flex items-center justify-center gap-2 shadow-lg">
-            <svg class="w-5 h-5"><use href="#check"/></svg> Сабт кардани мол
+          <button id="saveProdBtn" type="submit" class="w-full bg-ink text-cream font-bold rounded-2xl py-4 hover:bg-clay transition-all duration-300 flex items-center justify-center gap-2 shadow-lg active:scale-[0.99]">
+            <svg class="w-5 h-5"><use href="#check"/></svg> <span data-i18n="saveProductBtn">Сабт кардани мол</span>
           </button>
         </div>
       </form>
@@ -336,38 +415,38 @@
   <section id="tab-stats" class="tab-content hidden">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6">
       <div>
-        <h1 class="font-display font-extrabold text-2xl md:text-3xl">Омор ва Даромад</h1>
-        <p class="text-xs text-olive mt-1">Ҳисоботи фурӯш ва даромади умумӣ</p>
+        <h1 class="font-display font-extrabold text-2xl md:text-3xl" data-i18n="statsTitle">Омор ва даромад</h1>
+        <p class="text-xs text-olive mt-1" data-i18n="statsSub">Ҳисоботи фурӯш ва даромади умумӣ</p>
       </div>
-      <button onclick="openIncomeModal()" class="bg-clay text-cream text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-ink transition-colors flex items-center gap-1.5 shadow-sm">
-        <svg class="w-4 h-4"><use href="#dollar"/></svg> + Сабти фурӯш / даромад
+      <button onclick="openIncomeModal()" class="bg-clay text-cream text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-ink transition-all duration-300 flex items-center gap-1.5 shadow-sm active:scale-[0.98]">
+        <svg class="w-4 h-4"><use href="#dollar"/></svg> <span data-i18n="addIncomeBtn">+ Сабти даромад / фурӯш</span>
       </button>
     </div>
 
     <!-- Карточки показателей KPI -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
-      <div class="bg-white rounded-2xl p-4 md:p-5 border border-ink/10 shadow-sm">
-        <p class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-olive">Даромади умумӣ</p>
+      <div class="bg-white rounded-2xl p-4 md:p-5 border border-ink/10 shadow-sm admin-card">
+        <p class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-olive" data-i18n="kpiTotalIncome">Даромади умумӣ</p>
         <p id="statTotalIncome" class="font-display font-black text-2xl md:text-3xl text-clay mt-1">0 смн</p>
-        <p class="text-[11px] text-olive mt-1">Ҳамаи давра</p>
+        <p class="text-[11px] text-olive mt-1" data-i18n="kpiAllTime">Ҳамаи давра</p>
       </div>
 
-      <div class="bg-white rounded-2xl p-4 md:p-5 border border-ink/10 shadow-sm">
-        <p class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-olive">Фармоишҳо дар WhatsApp</p>
+      <div class="bg-white rounded-2xl p-4 md:p-5 border border-ink/10 shadow-sm admin-card">
+        <p class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-olive" data-i18n="kpiOrders">Фармоишҳо дар WhatsApp</p>
         <p id="statOrdersCount" class="font-display font-black text-2xl md:text-3xl text-ink mt-1">0</p>
-        <p class="text-[11px] text-olive mt-1">Кликҳои харидорон</p>
+        <p class="text-[11px] text-olive mt-1" data-i18n="kpiClicks">Кликҳои харидорон</p>
       </div>
 
-      <div class="bg-white rounded-2xl p-4 md:p-5 border border-ink/10 shadow-sm">
-        <p class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-olive">Молҳо дар фурӯш</p>
+      <div class="bg-white rounded-2xl p-4 md:p-5 border border-ink/10 shadow-sm admin-card">
+        <p class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-olive" data-i18n="kpiActive">Молҳо дар фурӯш</p>
         <p id="statActiveProducts" class="font-display font-black text-2xl md:text-3xl text-ink mt-1">0</p>
-        <p class="text-[11px] text-olive mt-1">Дар витринаи фаъол</p>
+        <p class="text-[11px] text-olive mt-1" data-i18n="kpiActiveSub">Дар витринаи фаъол</p>
       </div>
 
-      <div class="bg-white rounded-2xl p-4 md:p-5 border border-ink/10 shadow-sm">
-        <p class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-olive">Даромад ин моҳ</p>
+      <div class="bg-white rounded-2xl p-4 md:p-5 border border-ink/10 shadow-sm admin-card">
+        <p class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-olive" data-i18n="kpiMonth">Даромад ин моҳ</p>
         <p id="statMonthIncome" class="font-display font-black text-2xl md:text-3xl text-emerald-700 mt-1">0 смн</p>
-        <p class="text-[11px] text-olive mt-1">Моҳи ҷорӣ</p>
+        <p class="text-[11px] text-olive mt-1" data-i18n="kpiMonthSub">Моҳи ҷорӣ</p>
       </div>
     </div>
 
@@ -376,8 +455,8 @@
       <!-- График доходов -->
       <div class="lg:col-span-2 bg-white rounded-3xl p-5 md:p-6 border border-ink/10 shadow-sm">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="font-display font-bold text-base md:text-lg">Динамикаи даромад</h3>
-          <span class="text-xs text-olive font-semibold">Фурӯшҳои охирин</span>
+          <h3 class="font-display font-bold text-base md:text-lg" data-i18n="chartTitle">Динамикаи даромад</h3>
+          <span class="text-xs text-olive font-semibold" data-i18n="chartSub">Фурӯшҳои охирин</span>
         </div>
         <div id="incomeChartWrapper" class="h-48 flex items-end justify-between gap-2 pt-4 border-b border-ink/10"></div>
         <div id="incomeChartLabels" class="flex justify-between text-[10px] text-olive mt-2"></div>
@@ -385,7 +464,7 @@
 
       <!-- История последних записей -->
       <div class="bg-white rounded-3xl p-5 md:p-6 border border-ink/10 shadow-sm flex flex-col">
-        <h3 class="font-display font-bold text-base mb-3">Таърихи фурӯшҳо</h3>
+        <h3 class="font-display font-bold text-base mb-3" data-i18n="incomesHistory">Таърихи фурӯшҳо</h3>
         <div id="incomesList" class="space-y-2.5 overflow-y-auto max-h-64 flex-1 text-xs"></div>
       </div>
     </div>
@@ -396,15 +475,15 @@
   <section id="tab-notes" class="tab-content hidden">
     <div class="max-w-xl mx-auto">
       <div class="pb-6">
-        <h1 class="font-display font-extrabold text-2xl md:text-3xl">Қайдҳои мудир</h1>
-        <p class="text-xs text-olive mt-1">Қайдҳои фаврӣ, супоришҳо ва рақамҳои муштариён</p>
+        <h1 class="font-display font-extrabold text-2xl md:text-3xl" data-i18n="notesTitle">Қайдҳои мудир</h1>
+        <p class="text-xs text-olive mt-1" data-i18n="notesSub">Қайдҳои фаврӣ, супоришҳо ва рақамҳои муштариён</p>
       </div>
 
       <!-- Форма добавления заметки -->
       <div class="bg-white rounded-2xl p-3 border border-ink/10 shadow-sm flex items-center gap-2 mb-6">
-        <input id="noteInput" type="text" placeholder="Қайди нав ворид кунед (масалан: ба таъминкунанда занг занед)..."
+        <input id="noteInput" type="text" data-i18n-ph="notePh" placeholder="Қайди нав ворид кунед..."
                class="flex-1 px-3 py-2 text-sm bg-transparent focus:outline-none">
-        <button onclick="addNote()" class="bg-ink text-cream font-semibold text-xs px-4 py-2.5 rounded-xl hover:bg-clay transition-colors shrink-0">
+        <button onclick="addNote()" class="bg-ink text-cream font-semibold text-xs px-4 py-2.5 rounded-xl hover:bg-clay transition-colors shrink-0" data-i18n="addNoteBtn">
           Илова
         </button>
       </div>
@@ -418,10 +497,11 @@
 
 
 <!-- ========================= МОДАЛКА: САБТИ ДАРОМАД / ФУРӮШ ========================= -->
-<div id="incomeModal" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-sm flex items-center justify-center p-4">
-  <div class="w-full max-w-sm bg-white rounded-3xl p-6 border border-ink/10 shadow-2xl">
+<div id="incomeModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+  <div id="incomeModalOverlay" class="modal-overlay absolute inset-0 bg-ink/60 backdrop-blur-sm" onclick="closeIncomeModal()"></div>
+  <div id="incomeModalBox" class="modal-container relative w-full max-w-sm bg-white rounded-3xl p-6 border border-ink/10 shadow-2xl z-10">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="font-display font-bold text-lg">Сабти даромад</h3>
+      <h3 class="font-display font-bold text-lg" data-i18n="incomeModalTitle">Сабти даромад</h3>
       <button onclick="closeIncomeModal()" class="w-8 h-8 rounded-full border border-ink/10 grid place-items-center hover:bg-ink hover:text-cream transition-colors">
         <svg class="w-4 h-4"><use href="#x"/></svg>
       </button>
@@ -429,19 +509,19 @@
 
     <form id="incomeForm" class="space-y-3.5">
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1">Маблағ (смн) *</label>
-        <input id="incomeAmount" type="number" required min="1" placeholder="350" class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-ink">
+        <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1" data-i18n="incomeAmountLabel">Маблағ (смн) *</label>
+        <input id="incomeAmount" type="number" required min="1" placeholder="350" class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-ink transition-colors">
       </div>
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1">Номи мол ё модел</label>
-        <input id="incomeProduct" type="text" placeholder="Мисол: AXEL 42 андоза" class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-ink">
+        <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1" data-i18n="incomeProductLabel">Номи мол ё шарҳ</label>
+        <input id="incomeProduct" type="text" data-i18n-ph="incomeProductPh" placeholder="Мисол: AXEL 42 андоза" class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-ink transition-colors">
       </div>
       <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1">Эзоҳ (ихтиёрӣ)</label>
-        <input id="incomeNote" type="text" placeholder="Мисол: харидори Корвон" class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-ink">
+        <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1" data-i18n="incomeNoteLabel">Эзоҳ (ихтиёрӣ)</label>
+        <input id="incomeNote" type="text" data-i18n-ph="incomeNotePh" placeholder="Мисол: харидори бозори Корвон" class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-ink transition-colors">
       </div>
-      <button type="submit" class="w-full bg-clay text-cream font-bold rounded-xl py-3 hover:bg-ink transition-colors flex items-center justify-center gap-1.5 text-sm mt-4">
-        <svg class="w-4 h-4"><use href="#check"/></svg> Сабт кардан
+      <button type="submit" class="w-full bg-clay text-cream font-bold rounded-xl py-3 hover:bg-ink transition-all duration-300 flex items-center justify-center gap-1.5 text-sm mt-4 active:scale-[0.99]">
+        <svg class="w-4 h-4"><use href="#check"/></svg> <span data-i18n="saveBtn">Сабт кардан</span>
       </button>
     </form>
   </div>
@@ -449,18 +529,19 @@
 
 
 <!-- ========================= МОДАЛКА: ПОДТВЕРЖДЕНИЕ УДАЛЕНИЯ ========================= -->
-<div id="deleteModal" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-sm flex items-center justify-center p-4">
-  <div class="w-full max-w-sm bg-white rounded-3xl p-6 border border-ink/10 shadow-2xl text-center">
+<div id="deleteModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+  <div id="deleteModalOverlay" class="modal-overlay absolute inset-0 bg-ink/60 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+  <div id="deleteModalBox" class="modal-container relative w-full max-w-sm bg-white rounded-3xl p-6 border border-ink/10 shadow-2xl text-center z-10">
     <div class="w-12 h-12 rounded-2xl bg-clay/10 text-clay grid place-items-center mx-auto mb-3">
       <svg class="w-6 h-6"><use href="#trash"/></svg>
     </div>
-    <h3 class="font-display font-bold text-lg">Нест кардани мол?</h3>
-    <p id="deleteModalText" class="text-xs text-olive mt-1">Оё мехоҳед ин молро аз мағоза нест кунед?</p>
+    <h3 class="font-display font-bold text-lg" data-i18n="deleteModalTitle">Нест кардани мол?</h3>
+    <p id="deleteModalText" class="text-xs text-olive mt-1" data-i18n="deleteModalText">Оё мутмаин ҳастед, ки ин молро аз мағоза нест кардан мехоҳед?</p>
     <div class="flex gap-2.5 mt-6">
-      <button onclick="closeDeleteModal()" class="flex-1 border border-ink/15 rounded-xl py-2.5 text-xs font-semibold hover:bg-sand transition-colors">
+      <button onclick="closeDeleteModal()" class="flex-1 border border-ink/15 rounded-xl py-2.5 text-xs font-semibold hover:bg-sand transition-colors" data-i18n="cancelBtn">
         Бекор
       </button>
-      <button id="confirmDeleteBtn" class="flex-1 bg-clay text-cream rounded-xl py-2.5 text-xs font-bold hover:bg-ink transition-colors">
+      <button id="confirmDeleteBtn" class="flex-1 bg-clay text-cream rounded-xl py-2.5 text-xs font-bold hover:bg-ink transition-all duration-300" data-i18n="confirmDelete">
         Нест кардан
       </button>
     </div>
@@ -472,19 +553,19 @@
 <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-cream/95 backdrop-blur-md border-t border-ink/10 px-3 py-2 flex items-center justify-around">
   <button class="bottom-nav-btn flex flex-col items-center gap-1 text-[10px] font-bold text-ink active" data-tab="products">
     <svg class="w-5 h-5"><use href="#box"/></svg>
-    <span>Молҳо</span>
+    <span data-i18n="tabProducts">Молҳо</span>
   </button>
   <button class="bottom-nav-btn flex flex-col items-center gap-1 text-[10px] font-bold text-olive" data-tab="new-product">
     <svg class="w-5 h-5"><use href="#plus"/></svg>
-    <span>+ Мол</span>
+    <span data-i18n="tabNewProductShort">+ Мол</span>
   </button>
   <button class="bottom-nav-btn flex flex-col items-center gap-1 text-[10px] font-bold text-olive" data-tab="stats">
     <svg class="w-5 h-5"><use href="#chart"/></svg>
-    <span>Омор</span>
+    <span data-i18n="tabStatsShort">Омор</span>
   </button>
   <button class="bottom-nav-btn flex flex-col items-center gap-1 text-[10px] font-bold text-olive" data-tab="notes">
     <svg class="w-5 h-5"><use href="#note"/></svg>
-    <span>Қайдҳо</span>
+    <span data-i18n="tabNotes">Қайдҳо</span>
   </button>
 </div>
 
@@ -494,31 +575,341 @@
 
 <script>
 /* ============================================================
-   STEP style.tj — Панели мудир (Admin Logic)
-   Логин: Firdavs, Код: 0016
-   ============================================================ */
+  STEP style.tj — Панели мудир (Admin Logic)
+  ============================================================ */
 
-const ADMIN_USER = 'Firdavs';
-const ADMIN_CODE = '0016';
 const CUR = 'смн';
+
+// ============================================================
+// СЛОВАРЬ ПЕРЕВОДОВ (ТҶ / RU)
+// ============================================================
+const ADMIN_I18N = {
+  tj: {
+    loginBadge: 'Панели мудир',
+    loginTitle: 'Вуруд ба низом',
+    loginSub: 'Лутфан маълумоти воридшавиро нависед',
+    loginUserLabel: 'Номи корбар',
+    loginCodeLabel: 'Рамзи махфӣ',
+    rememberMe: 'Дар ин дастгоҳ маро дар хотир нигоҳ дор',
+    loginBtn: 'Ворид шудан',
+    backToStore: 'Ба мағоза баргаштан',
+    loginErr: 'Номи корбар ё рамзи махфӣ нодуруст аст',
+    welcomeToast: 'Хуш омадед',
+
+    adminBadge: 'Мудир',
+    tabProducts: 'Молҳо',
+    tabNewProduct: '+ Иловаи мол',
+    tabNewProductShort: '+ Мол',
+    tabStats: 'Омор ва даромад',
+    tabStatsShort: 'Омор',
+    tabNotes: 'Қайдҳо',
+    logout: 'Баромадан',
+    logoutConfirm: 'Оё мехоҳед аз панели мудир бароед?',
+
+    manageProductsTitle: 'Идоракунии молҳо',
+    totalProducts: 'Ҳамагӣ мол дар фурӯш:',
+    addNewBtn: 'Иловаи моли нав',
+    searchProductPh: 'Ҷустуҷӯ аз рӯи ном ё артикул…',
+    noProducts: 'Ҳанӯз ягон мол ёфт нашуд',
+    sizeLabel: 'Андоза:',
+    editBtn: 'Таҳрир',
+    deleteBtn: 'Нест кардан',
+
+    formTitleAdd: 'Иловаи моли нав',
+    formTitleEdit: 'Таҳрири мол:',
+    formSub: 'Майдонҳои лозимаро пур кунед, то мол дар мағоза пайдо шавад',
+    cancel: 'Бекор кардан',
+    prodNameLabel: 'Номи мол (бренд ва модел)',
+    prodNamePh: 'Мисол: AXEL Casual Black ё Air Max',
+    catLabel: 'Категория',
+    catSneakers: 'Кроссовкаҳо (Кроссовки)',
+    catOutdoors: 'Аутдор (Сайёҳӣ / Треккинг)',
+    catCasual: 'Кэжуал (Ҳамарӯза)',
+    catClassic: 'Классикӣ (Классика)',
+    skuLabel: 'Артикул (SKU)',
+    priceLabel: 'Нарх (смн)',
+    oldPriceLabel: 'Нархи пештара (агар тахфиф бошад)',
+    oldPricePh: 'ихтиёрӣ',
+    badgeLabel: 'Нишон (Бейдж)',
+    badgeNone: 'Бе нишон',
+    badgeNew: 'Нав (Новинка)',
+    badgeHit: 'Хит (Бестселлер)',
+    sizesLabel: 'Андозаҳо',
+    sizesHint: 'Андозаҳоро бо фосила ё вергул ворид кунед (масалан: 39 40 41 42 43)',
+    preset: 'Маҷмӯа:',
+    descLabel: 'Тавсифи мол (Маълумоти умумӣ)',
+    descPh: 'Мисол: Кроссовкаи сабук барои варзиш, сайругашт ва истифодаи рӯзмарра...',
+    specsLabel: 'Хусусиятҳои асосӣ (бо аломати ✅, то 5 банд)',
+    specsTemplateBtn: 'Намунаи тайёр',
+    specsHint: 'Дар сайти асосӣ ин бандҳо бо аломати ✅ зебо намоиш дода мешаванд:',
+    specsDefault: [
+      'Сохти сабук — роҳат дар тамоми рӯз',
+      'Рӯйпӯши нафаскашандаи матоӣ',
+      'Кафи мулоими амортизатсионӣ',
+      'Кафи устувори протектордор',
+      'Ранг: мувофиқ ба ҳар гуна либос'
+    ],
+    photosLabel: 'Аксҳои мол (аз 1 то 6 акс)',
+    photosSelected: '{n} / 6 интихоб шуд',
+    photosUploadText: 'Аксҳоро аз галерея ё камера интихоб кунед',
+    photosUploadHint: 'Акси якум сурати асосии мол мегардад (то 6 акс)',
+    photoMain: 'Асосӣ',
+    saveProductBtn: 'Сабт кардани мол',
+
+    statsTitle: 'Омор ва даромад',
+    statsSub: 'Ҳисоботи фурӯш ва даромади умумӣ',
+    addIncomeBtn: '+ Сабти даромад / фурӯш',
+    kpiTotalIncome: 'Даромади умумӣ',
+    kpiAllTime: 'Ҳамаи давра',
+    kpiOrders: 'Фармоишҳо дар WhatsApp',
+    kpiClicks: 'Кликҳои харидорон',
+    kpiActive: 'Молҳо дар фурӯш',
+    kpiActiveSub: 'Дар витринаи фаъол',
+    kpiMonth: 'Даромад дар ин моҳ',
+    kpiMonthSub: 'Моҳи ҷорӣ',
+    chartTitle: 'Динамикаи даромад',
+    chartSub: 'Фурӯшҳои охирин',
+    chartEmpty: 'Барои сохтани диаграмма даромадро сабт намоед',
+    incomesHistory: 'Таърихи фурӯшҳо',
+    noIncomes: 'Ҳанӯз фурӯше сабт нашудааст',
+    saleDefault: 'Фурӯши мол',
+
+    notesTitle: 'Қайдҳои мудир',
+    notesSub: 'Қайдҳои фаврӣ, супоришҳо ва рақамҳои муштариён',
+    notePh: 'Қайди нав ворид кунед (масалан: ба анбор занг занед)...',
+    addNoteBtn: 'Илова',
+    noNotes: 'Ҳанӯз ягон қайд нест',
+
+    incomeModalTitle: 'Сабти даромад',
+    incomeAmountLabel: 'Маблағ (смн) *',
+    incomeProductLabel: 'Номи мол ё шарҳ',
+    incomeProductPh: 'Мисол: AXEL 42 андоза',
+    incomeNoteLabel: 'Эзоҳ (ихтиёрӣ)',
+    incomeNotePh: 'Мисол: харидори бозори Корвон',
+    saveBtn: 'Сабт кардан',
+
+    deleteModalTitle: 'Нест кардани мол?',
+    deleteModalText: 'Оё мутмаин ҳастед, ки ин молро аз мағоза нест кардан мехоҳед?',
+    cancelBtn: 'Бекор',
+    confirmDelete: 'Нест кардан',
+
+    alertNeedSize: 'Лутфан ҳадди ақал як андоза ворид намоед',
+    alertNeedPhoto: 'Лутфан ҳадди ақал як акси молро бор кунед',
+    alertMaxPhotos: 'Ҳадди аксар 6 акс метавонед илова кунед',
+    toastSaved: 'Моли нав сабт шуд!',
+    toastUpdated: 'Мол бомуваффақият нав шуд!',
+    toastDeleted: 'Мол нест карда шуд',
+    toastSpecsLoaded: 'Шаблони хусусиятҳо гузошта шуд',
+    toastIncomeRecorded: '+{amt} сабт шуд!'
+  },
+  ru: {
+    loginBadge: 'Панель администратора',
+    loginTitle: 'Вход в систему',
+    loginSub: 'Введите данные для входа',
+    loginUserLabel: 'Имя пользователя',
+    loginCodeLabel: 'Пароль',
+    rememberMe: 'Запомнить на этом устройстве',
+    loginBtn: 'Войти',
+    backToStore: 'Вернуться в магазин',
+    loginErr: 'Неверное имя пользователя или код!',
+    welcomeToast: 'Добро пожаловать!',
+
+    adminBadge: 'Админ',
+    tabProducts: 'Товары',
+    tabNewProduct: '+ Добавить товар',
+    tabNewProductShort: '+ Товар',
+    tabStats: 'Статистика и доход',
+    tabStatsShort: 'Омор',
+    tabNotes: 'Заметки',
+    logout: 'Выйти',
+    logoutConfirm: 'Вы уверены, что хотите выйти из панели управления?',
+
+    manageProductsTitle: 'Управление товарами',
+    totalProducts: 'Всего товаров в продаже:',
+    addNewBtn: 'Добавить новый товар',
+    searchProductPh: 'Поиск по названию или артикулу…',
+    noProducts: 'Товаров не найдено',
+    sizeLabel: 'Размеры:',
+    editBtn: 'Изменить',
+    deleteBtn: 'Удалить',
+
+    formTitleAdd: 'Добавление нового товара',
+    formTitleEdit: 'Редактирование товара:',
+    formSub: 'Заполните поля, чтобы товар появился на витрине',
+    cancel: 'Отмена',
+    prodNameLabel: 'Название товара (бренд и модель)',
+    prodNamePh: 'Например: AXEL Casual Black или Air Max',
+    catLabel: 'Категория',
+    catSneakers: 'Кроссовки',
+    catOutdoors: 'Аутдор (Треккинг / Спорт)',
+    catCasual: 'Кэжуал (Повседневная)',
+    catClassic: 'Классика',
+    skuLabel: 'Артикул (SKU)',
+    priceLabel: 'Цена (смн)',
+    oldPriceLabel: 'Старая цена (до скидки)',
+    oldPricePh: 'необязательно',
+    badgeLabel: 'Метка (Бейдж)',
+    badgeNone: 'Без метки',
+    badgeNew: 'Новинка (New)',
+    badgeHit: 'Хит продаж (Hit)',
+    sizesLabel: 'Размеры',
+    sizesHint: 'Укажите размеры через пробел или запятую (например: 39 40 41 42 43)',
+    preset: 'Пресет:',
+    descLabel: 'Описание товара (Основная информация)',
+    descPh: 'Например: Легкие кроссовки для тренировок, прогулок и повседневной носки...',
+    specsLabel: 'Ключевые особенности (с галочками ✅, до 5 пунктов)',
+    specsTemplateBtn: 'Готовый шаблон',
+    specsHint: 'На сайте эти пункты будут красиво отображаться с отметкой ✅:',
+    specsDefault: [
+      'Легкая конструкция — комфорт на весь день',
+      'Дышащий текстильный верх',
+      'Мягкая амортизирующая подошва',
+      'Рельефная подошва для устойчивости',
+      'Универсальный цвет под любой стиль'
+    ],
+    photosLabel: 'Фотографии товара (от 1 до 6 фото)',
+    photosSelected: '{n} / 6 выбрано',
+    photosUploadText: 'Выберите фото из галереи или сделайте снимок',
+    photosUploadHint: 'Первое фото будет главным на витрине (до 6 фото)',
+    photoMain: 'Главное',
+    saveProductBtn: 'Сохранить товар',
+
+    statsTitle: 'Статистика и доход',
+    statsSub: 'Отчет по продажам и общему доходу',
+    addIncomeBtn: '+ Запись дохода / продажи',
+    kpiTotalIncome: 'Общий доход',
+    kpiAllTime: 'За все время',
+    kpiOrders: 'Заказы в WhatsApp',
+    kpiClicks: 'Клики покупателей',
+    kpiActive: 'Товаров в продаже',
+    kpiActiveSub: 'На активной витрине',
+    kpiMonth: 'Доход за этот месяц',
+    kpiMonthSub: 'Текущий месяц',
+    chartTitle: 'Динамика дохода',
+    chartSub: 'Последние продажи',
+    chartEmpty: 'Добавьте записи дохода для построения графика',
+    incomesHistory: 'История продаж',
+    noIncomes: 'Пока нет записей о продажах',
+    saleDefault: 'Продажа обуви',
+
+    notesTitle: 'Заметки руководителя',
+    notesSub: 'Быстрые заметки, поручения и важные контакты',
+    notePh: 'Введите новую заметку (например: позвонить поставщику)...',
+    addNoteBtn: 'Добавить',
+    noNotes: 'Заметок пока нет',
+
+    incomeModalTitle: 'Запись дохода',
+    incomeAmountLabel: 'Сумма (смн) *',
+    incomeProductLabel: 'Товар или комментарий',
+    incomeProductPh: 'Например: AXEL 42 размер',
+    incomeNoteLabel: 'Примечание (необязательно)',
+    incomeNotePh: 'Например: клиент с рынка Корвон',
+    saveBtn: 'Записать',
+
+    deleteModalTitle: 'Удалить товар?',
+    deleteModalText: 'Вы уверены, что хотите удалить этот товар из магазина?',
+    cancelBtn: 'Отмена',
+    confirmDelete: 'Удалить',
+
+    alertNeedSize: 'Пожалуйста, укажите хотя бы один размер',
+    alertNeedPhoto: 'Пожалуйста, загрузите хотя бы одну фотографию',
+    alertMaxPhotos: 'Можно загрузить не более 6 фотографий',
+    toastSaved: 'Товар успешно добавлен!',
+    toastUpdated: 'Товар успешно обновлен!',
+    toastDeleted: 'Товар удален',
+    toastSpecsLoaded: 'Шаблон характеристик применен',
+    toastIncomeRecorded: '+{amt} записано!'
+  }
+};
+
+let adminLang = (typeof localStorage !== 'undefined' && localStorage.getItem('step_admin_lang')) || 'tj';
+if (!ADMIN_I18N[adminLang]) adminLang = 'tj';
+const t = (k) => (ADMIN_I18N[adminLang][k] != null ? ADMIN_I18N[adminLang][k] : (ADMIN_I18N.tj[k] || ''));
 
 let currentProducts = [];
 let currentStats = { totalIncome: 0, whatsappOrders: 0, incomes: [], clicks: [] };
 let currentNotes = [];
-let pendingPhotos = []; // массив фото для товара (до 6 шт.)
+let pendingPhotos = [];
 let productToDeleteId = null;
 
 // Селекторы
 const $ = (s) => document.querySelector(s);
 const fmt = (n) => (n || 0).toLocaleString('ru-RU') + ' ' + CUR;
 
+function applyAdminLang() {
+  document.documentElement.lang = adminLang === 'ru' ? 'ru' : 'tg';
+
+  // Переключение подсветки кнопок языков
+  document.querySelectorAll('.admin-lang-btn').forEach(b => {
+    const on = b.dataset.lang === adminLang;
+    b.classList.toggle('bg-ink', on);
+    b.classList.toggle('text-cream', on);
+    b.classList.toggle('text-ink/60', !on);
+  });
+
+  // Текстовые узлы
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (t(key)) el.textContent = t(key);
+  });
+
+  // Плейсхолдеры
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.dataset.i18nPh;
+    if (t(key)) el.placeholder = t(key);
+  });
+
+  // Опции select
+  document.querySelectorAll('[data-i18n-opt]').forEach(el => {
+    const key = el.dataset.i18nOpt;
+    if (t(key)) el.textContent = t(key);
+  });
+
+  // Обновление динамических текстов
+  updateDynamicTexts();
+  renderProducts();
+  renderStats();
+  renderNotes();
+}
+
+function updateDynamicTexts() {
+  const isEditing = Boolean($('#prodId').value);
+  const currentName = $('#prodName').value.trim();
+  if (isEditing) {
+    $('#formTitle').textContent = t('formTitleEdit') + (currentName ? ' ' + currentName : '');
+  } else {
+    $('#formTitle').textContent = t('formTitleAdd');
+  }
+  $('#photoCountBadge').textContent = t('photosSelected').replace('{n}', pendingPhotos.length);
+}
+
+// Слушатель клика на переключатель языков
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.admin-lang-btn');
+  if (!btn || btn.dataset.lang === adminLang) return;
+  adminLang = btn.dataset.lang;
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('step_admin_lang', adminLang);
+  }
+  applyAdminLang();
+});
+
 // 1. Авторизация и сохранение в телефоне
-function checkAuth() {
-  const token = localStorage.getItem('step_admin_token');
-  const user = localStorage.getItem('step_admin_user');
-  if (token && (user === ADMIN_USER || user?.toLowerCase() === ADMIN_USER.toLowerCase())) {
+async function checkAuth() {
+  const token = localStorage.getItem('step_admin_token') || sessionStorage.getItem('step_admin_token');
+  if (token) {
+    try {
+      const response = await fetch('/api/auth/check', { headers: { 'Authorization': 'Bearer ' + token } });
+      if (!response.ok) throw new Error('Session expired');
+    } catch {
+      localStorage.removeItem('step_admin_token');
+      sessionStorage.removeItem('step_admin_token');
+      localStorage.removeItem('step_admin_user');
+      sessionStorage.removeItem('step_admin_user');
+      $('#loginScreen').classList.remove('hidden');
+      return;
+    }
     $('#loginScreen').classList.add('hidden');
-    $('#currentUserName').textContent = user;
     initData();
   } else {
     $('#loginScreen').classList.remove('hidden');
@@ -531,31 +922,33 @@ $('#loginForm').addEventListener('submit', async (e) => {
   const c = $('#loginCode').value.trim();
   const rem = $('#rememberMe').checked;
 
-  if (u.toLowerCase() === ADMIN_USER.toLowerCase() && c === ADMIN_CODE) {
-    const token = 'step-firdavs-permanent-0016';
-    if (rem) {
-      localStorage.setItem('step_admin_token', token);
-      localStorage.setItem('step_admin_user', ADMIN_USER);
-    } else {
-      sessionStorage.setItem('step_admin_token', token);
-      sessionStorage.setItem('step_admin_user', ADMIN_USER);
-    }
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: u, code: c })
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success || !result.token) throw new Error('Login failed');
+
+    const storage = rem ? localStorage : sessionStorage;
+    storage.setItem('step_admin_token', result.token);
+    storage.setItem('step_admin_user', 'admin');
     $('#loginError').classList.add('hidden');
     $('#loginScreen').classList.add('hidden');
-    $('#currentUserName').textContent = ADMIN_USER;
-    toast('Хуш омадед, Фирдавс!', 'check');
+    $('#currentUserName').textContent = t('adminBadge');
+    toast(t('welcomeToast'), 'check');
     initData();
-  } else {
+  } catch {
     const err = $('#loginError');
-    err.textContent = 'Номи корбар ё код нодуруст аст!';
+    err.textContent = t('loginErr');
     err.classList.remove('hidden');
   }
 });
 
 $('#logoutBtn').addEventListener('click', () => {
-  if (confirm('Оё мехоҳед аз панели мудир бароед?')) {
+  if (confirm(t('logoutConfirm'))) {
     localStorage.removeItem('step_admin_token');
-    localStorage.removeItem('step_admin_user');
     sessionStorage.removeItem('step_admin_token');
     sessionStorage.removeItem('step_admin_user');
     location.reload();
@@ -566,13 +959,16 @@ $('#logoutBtn').addEventListener('click', () => {
 function switchTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
   const target = $(`#tab-${tabId}`);
-  if (target) target.classList.remove('hidden');
+  if (target) {
+    target.classList.remove('hidden');
+  }
 
   document.querySelectorAll('.tab-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.tab === tabId);
   });
   document.querySelectorAll('.bottom-nav-btn').forEach(b => {
     const on = b.dataset.tab === tabId;
+    b.classList.toggle('active', on);
     b.classList.toggle('text-clay', on);
     b.classList.toggle('text-olive', !on);
   });
@@ -598,7 +994,6 @@ async function loadProducts() {
       throw new Error('api error');
     }
   } catch (_) {
-    // Fallback на локально сохраненный кэш или дефолтные товары
     const cached = localStorage.getItem('step_cached_products');
     if (cached) {
       currentProducts = JSON.parse(cached);
@@ -646,7 +1041,8 @@ async function loadNotes() {
 function renderProducts() {
   const q = ($('#adminSearchInput')?.value || '').trim().toLowerCase();
   const list = q ? currentProducts.filter(p => (
-    p.name.toLowerCase().includes(q) ||
+    (p.name && p.name.toLowerCase().includes(q)) ||
+    (p.nameTJ && p.nameTJ.toLowerCase().includes(q)) ||
     (p.sku && p.sku.toLowerCase().includes(q))
   )) : currentProducts;
 
@@ -655,20 +1051,24 @@ function renderProducts() {
 
   const grid = $('#adminProductGrid');
   if (!list.length) {
-    grid.innerHTML = '<div class="col-span-full text-center text-olive py-12">Ҳоло ягон мол ёфт нашуд</div>';
+    grid.innerHTML = `<div class="col-span-full text-center text-olive py-12">${t('noProducts')}</div>`;
     return;
   }
 
   grid.innerHTML = list.map(p => {
     const photo = (p.photos && p.photos[0]) || 'uploads/logo/favicon.png';
-    const badgeHtml = p.badge === 'new'
-      ? '<span class="bg-ink text-cream text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">Нав</span>'
-      : (p.badge === 'hit' ? '<span class="bg-clay text-cream text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">Хит</span>' : '');
+    const displayName = (adminLang === 'tj' ? (p.nameTJ || p.name) : (p.name || p.nameTJ)) || 'STEP Shoe';
+    const badgeText = p.badge === 'new'
+      ? (adminLang === 'tj' ? 'Нав' : 'Новинка')
+      : (p.badge === 'hit' ? (adminLang === 'tj' ? 'Хит' : 'Хит') : '');
+    const badgeHtml = badgeText
+      ? `<span class="${p.badge === 'new' ? 'bg-ink' : 'bg-clay'} text-cream text-[9px] font-bold px-2 py-0.5 rounded-full uppercase">${badgeText}</span>`
+      : '';
 
     return `
-    <div class="bg-white rounded-2xl border border-ink/10 overflow-hidden p-3.5 flex gap-3.5 shadow-sm hover:shadow-md transition-shadow">
+    <div class="bg-white rounded-2xl border border-ink/10 overflow-hidden p-3.5 flex gap-3.5 shadow-sm admin-card">
       <div class="w-24 h-24 rounded-xl bg-sand shrink-0 overflow-hidden relative">
-        <img src="${photo}" alt="${p.name}" class="w-full h-full object-cover">
+        <img src="${photo}" alt="${displayName}" class="w-full h-full object-cover">
         ${badgeHtml ? `<div class="absolute top-1 left-1">${badgeHtml}</div>` : ''}
       </div>
       <div class="flex-1 flex flex-col justify-between min-w-0">
@@ -677,14 +1077,14 @@ function renderProducts() {
             <span class="text-[10px] uppercase font-bold text-olive">${p.sku || 'STP'}</span>
             <span class="text-xs font-extrabold text-ink">${fmt(p.price)}</span>
           </div>
-          <h4 class="font-bold text-sm truncate mt-0.5" title="${p.name}">${p.name}</h4>
-          <p class="text-[11px] text-olive truncate mt-1">Андоза: ${(p.sizes || []).join(', ')}</p>
+          <h4 class="font-bold text-sm truncate mt-0.5" title="${displayName}">${displayName}</h4>
+          <p class="text-[11px] text-olive truncate mt-1">${t('sizeLabel')} ${(p.sizes || []).join(', ')}</p>
         </div>
         <div class="flex items-center gap-2 pt-2 border-t border-ink/5 mt-2">
-          <button onclick="editProduct(${p.id})" class="flex-1 bg-sand/60 hover:bg-sand text-ink rounded-lg py-1.5 text-xs font-bold transition-colors flex items-center justify-center gap-1">
-            <svg class="w-3.5 h-3.5"><use href="#edit"/></svg> Таҳрир
+          <button onclick="editProduct(${p.id})" class="flex-1 bg-sand/60 hover:bg-sand text-ink rounded-lg py-1.5 text-xs font-bold transition-all flex items-center justify-center gap-1 active:scale-[0.98]">
+            <svg class="w-3.5 h-3.5"><use href="#edit"/></svg> ${t('editBtn')}
           </button>
-          <button onclick="promptDeleteProduct(${p.id}, '${p.name.replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-lg bg-clay/10 text-clay hover:bg-clay hover:text-cream transition-colors grid place-items-center" title="Нест кардан">
+          <button onclick="promptDeleteProduct(${p.id}, '${displayName.replace(/'/g, "\'")}')" class="w-8 h-8 rounded-lg bg-clay/10 text-clay hover:bg-clay hover:text-cream transition-all duration-300 grid place-items-center active:scale-[0.98]" title="${t('deleteBtn')}">
             <svg class="w-4 h-4"><use href="#trash"/></svg>
           </button>
         </div>
@@ -701,12 +1101,13 @@ function setPresetSizes(sizes) {
 }
 
 function loadDefaultSpecs() {
-  $('#spec1').value = 'Сохти сабук — тамоми рӯз бароҳат';
-  $('#spec2').value = 'Рӯйпӯши матоии нафасгузар';
-  $('#spec3').value = 'Кафи амортизатсионии мулоим';
-  $('#spec4').value = 'Кафи рельефӣ барои устуворӣ';
-  $('#spec5').value = 'Ранг: кабуди торик бо каф сафед';
-  toast('Шаблони хусусиятҳо пур шуд', 'check');
+  const specs = ADMIN_I18N[adminLang].specsDefault || ADMIN_I18N.tj.specsDefault;
+  $('#spec1').value = specs[0] || '';
+  $('#spec2').value = specs[1] || '';
+  $('#spec3').value = specs[2] || '';
+  $('#spec4').value = specs[3] || '';
+  $('#spec5').value = specs[4] || '';
+  toast(t('toastSpecsLoaded'), 'check');
 }
 
 // 6. Обработка загрузки фото (до 6 штук)
@@ -716,7 +1117,7 @@ $('#photoFileInput').addEventListener('change', async (e) => {
 
   const remaining = 6 - pendingPhotos.length;
   if (remaining <= 0) {
-    alert('Ҳадди аксар 6 акс метавонед илова кунед');
+    alert(t('alertMaxPhotos'));
     return;
   }
 
@@ -757,15 +1158,15 @@ function removePendingPhoto(idx) {
 }
 
 function renderPhotoPreviews() {
-  $('#photoCountBadge').textContent = `${pendingPhotos.length} / 6 интихоб шуд`;
+  $('#photoCountBadge').textContent = t('photosSelected').replace('{n}', pendingPhotos.length);
   const grid = $('#photosPreviewGrid');
   grid.innerHTML = pendingPhotos.map((p, i) => `
-    <div class="relative aspect-square rounded-xl overflow-hidden bg-sand border border-ink/10 group">
+    <div class="relative aspect-square rounded-xl overflow-hidden bg-sand border border-ink/10 group transition-transform duration-200">
       <img src="${p}" class="w-full h-full object-cover">
       <span class="absolute top-1 left-1 bg-ink/80 text-cream text-[9px] font-bold px-1.5 py-0.5 rounded-md">
-        ${i === 0 ? 'Асосӣ' : i + 1}
+        ${i === 0 ? t('photoMain') : i + 1}
       </span>
-      <button type="button" onclick="removePendingPhoto(${i})" class="absolute top-1 right-1 w-6 h-6 rounded-full bg-clay text-cream grid place-items-center shadow hover:scale-110 transition-transform">
+      <button type="button" onclick="removePendingPhoto(${i})" class="absolute top-1 right-1 w-6 h-6 rounded-full bg-clay text-cream grid place-items-center shadow hover:scale-110 active:scale-95 transition-transform">
         <svg class="w-3 h-3"><use href="#x"/></svg>
       </button>
     </div>
@@ -790,7 +1191,7 @@ function resetProductForm() {
   $('#spec5').value = '';
   pendingPhotos = [];
   renderPhotoPreviews();
-  $('#formTitle').textContent = 'Иловаи моли нав';
+  $('#formTitle').textContent = t('formTitleAdd');
 }
 
 function editProduct(id) {
@@ -798,16 +1199,16 @@ function editProduct(id) {
   if (!p) return;
 
   $('#prodId').value = p.id;
-  $('#prodName').value = p.name || '';
+  $('#prodName').value = (adminLang === 'tj' ? (p.nameTJ || p.name) : (p.name || p.nameTJ)) || '';
   $('#prodCat').value = p.cat || 'sneakers';
   $('#prodSku').value = p.sku || '';
   $('#prodPrice').value = p.price || '';
   $('#prodOldPrice').value = p.oldPrice || '';
   $('#prodBadge').value = p.badge || '';
   $('#prodSizes').value = (p.sizes || []).join(' ');
-  $('#prodDesc').value = p.descTJ || p.desc || '';
+  $('#prodDesc').value = (adminLang === 'tj' ? (p.descTJ || p.desc) : (p.desc || p.descTJ)) || '';
 
-  const specs = p.specsTJ || p.specs || [];
+  const specs = (adminLang === 'tj' ? (p.specsTJ || p.specs) : (p.specs || p.specsTJ)) || [];
   $('#spec1').value = specs[0] || '';
   $('#spec2').value = specs[1] || '';
   $('#spec3').value = specs[2] || '';
@@ -817,7 +1218,8 @@ function editProduct(id) {
   pendingPhotos = (p.photos && p.photos.length) ? [...p.photos] : [];
   renderPhotoPreviews();
 
-  $('#formTitle').textContent = 'Таҳрири мол: ' + p.name;
+  const titleName = (adminLang === 'tj' ? (p.nameTJ || p.name) : (p.name || p.nameTJ)) || '';
+  $('#formTitle').textContent = t('formTitleEdit') + ' ' + titleName;
   switchTab('new-product');
 }
 
@@ -835,12 +1237,12 @@ $('#productForm').addEventListener('submit', async (e) => {
   const rawSizes = $('#prodSizes').value.trim().split(/[\s,]+/).filter(Boolean);
   const sizes = rawSizes.map(Number).filter(n => !isNaN(n));
   if (!sizes.length) {
-    alert('Лутфан ҳадди ақал як андоза ворид намоед');
+    alert(t('alertNeedSize'));
     return;
   }
 
   if (!pendingPhotos.length) {
-    alert('Лутфан ҳадди ақал як акси молро бор кунед');
+    alert(t('alertNeedPhoto'));
     return;
   }
 
@@ -854,6 +1256,7 @@ $('#productForm').addEventListener('submit', async (e) => {
 
   const desc = $('#prodDesc').value.trim() || name;
   const editId = $('#prodId').value ? parseInt($('#prodId').value) : null;
+  const existing = editId ? currentProducts.find(x => x.id === editId) : null;
 
   const catNames = {
     sneakers: ['Кроссовкаҳо', 'Кроссовки'],
@@ -864,7 +1267,8 @@ $('#productForm').addEventListener('submit', async (e) => {
 
   const productData = {
     id: editId || Date.now(),
-    name,
+    name: (adminLang === 'ru') ? name : (existing?.name || name),
+    nameTJ: (adminLang === 'tj') ? name : (existing?.nameTJ || name),
     cat,
     catNameTJ: catNames[cat] ? catNames[cat][0] : 'Кроссовкаҳо',
     catName: catNames[cat] ? catNames[cat][1] : 'Кроссовки',
@@ -872,10 +1276,10 @@ $('#productForm').addEventListener('submit', async (e) => {
     oldPrice,
     badge,
     sku,
-    desc,
-    descTJ: desc,
-    specs: specs.length ? specs : ['Сохти сабук', 'Матои нафасгузар'],
-    specsTJ: specs.length ? specs : ['Сохти сабук', 'Матои нафасгузар'],
+    desc: (adminLang === 'ru') ? desc : (existing?.desc || desc),
+    descTJ: (adminLang === 'tj') ? desc : (existing?.descTJ || desc),
+    specs: (adminLang === 'ru' && specs.length) ? specs : (existing?.specs || specs),
+    specsTJ: (adminLang === 'tj' && specs.length) ? specs : (existing?.specsTJ || specs),
     sizes,
     photos: pendingPhotos
   };
@@ -884,15 +1288,14 @@ $('#productForm').addEventListener('submit', async (e) => {
   try {
     const url = '/api/products';
     const method = editId ? 'PUT' : 'POST';
-    const res = await fetch(url, {
+    await fetch(url, {
       method,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + (localStorage.getItem('step_admin_token') || 'step-firdavs-permanent-0016')
+        'Authorization': 'Bearer ' + (localStorage.getItem('step_admin_token') || sessionStorage.getItem('step_admin_token') || '')
       },
       body: JSON.stringify(productData)
     });
-    if (!res.ok) throw new Error('save failed');
   } catch (_) {}
 
   // Обновляем локальный список
@@ -904,7 +1307,7 @@ $('#productForm').addEventListener('submit', async (e) => {
   }
   localStorage.setItem('step_cached_products', JSON.stringify(currentProducts));
 
-  toast(editId ? 'Мол бомуваффақият нав шуд!' : 'Моли нав сабт шуд!', 'check');
+  toast(editId ? t('toastUpdated') : t('toastSaved'), 'check');
   resetProductForm();
   renderProducts();
   switchTab('products');
@@ -913,13 +1316,28 @@ $('#productForm').addEventListener('submit', async (e) => {
 // 8. Удаление товара
 function promptDeleteProduct(id, name) {
   productToDeleteId = id;
-  $('#deleteModalText').textContent = `Оё мехоҳед моли «${name}»-ро аз мағоза нест кунед?`;
-  $('#deleteModal').classList.remove('hidden');
+  $('#deleteModalText').textContent = (adminLang === 'tj')
+    ? `Оё мехоҳед моли «${name}»-ро аз мағоза нест кунед?`
+    : `Удалить товар «${name}» из каталога?`;
+
+  const modal = $('#deleteModal');
+  const overlay = $('#deleteModalOverlay');
+  const box = $('#deleteModalBox');
+  modal.classList.remove('hidden');
+  requestAnimationFrame(() => {
+    overlay.classList.add('active');
+    box.classList.add('active');
+  });
 }
 
 function closeDeleteModal() {
   productToDeleteId = null;
-  $('#deleteModal').classList.add('hidden');
+  const modal = $('#deleteModal');
+  const overlay = $('#deleteModalOverlay');
+  const box = $('#deleteModalBox');
+  overlay.classList.remove('active');
+  box.classList.remove('active');
+  setTimeout(() => modal.classList.add('hidden'), 320);
 }
 
 $('#confirmDeleteBtn').addEventListener('click', async () => {
@@ -929,14 +1347,14 @@ $('#confirmDeleteBtn').addEventListener('click', async () => {
   try {
     await fetch(`/api/products?id=${id}`, {
       method: 'DELETE',
-      headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('step_admin_token') || 'step-firdavs-permanent-0016') }
+      headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('step_admin_token') || sessionStorage.getItem('step_admin_token') || '') }
     });
   } catch (_) {}
 
   currentProducts = currentProducts.filter(p => p.id !== id);
   localStorage.setItem('step_cached_products', JSON.stringify(currentProducts));
   closeDeleteModal();
-  toast('Мол нест карда шуд', 'trash');
+  toast(t('toastDeleted'), 'trash');
   renderProducts();
 });
 
@@ -956,17 +1374,17 @@ function renderStats() {
   // Список последних доходов
   const list = $('#incomesList');
   if (!currentStats.incomes || !currentStats.incomes.length) {
-    list.innerHTML = '<p class="text-olive text-center py-6">Ҳоло фурӯш сабт нашудааст</p>';
+    list.innerHTML = `<p class="text-olive text-center py-6">${t('noIncomes')}</p>`;
   } else {
     list.innerHTML = currentStats.incomes.slice(0, 20).map(inc => `
-      <div class="flex items-center justify-between p-2.5 rounded-xl bg-sand/30 border border-ink/5">
+      <div class="flex items-center justify-between p-2.5 rounded-xl bg-sand/30 border border-ink/5 transition-all hover:bg-sand/50">
         <div>
-          <p class="font-bold text-ink">${inc.product || 'Фурӯши пойафзор'}</p>
+          <p class="font-bold text-ink">${inc.product || t('saleDefault')}</p>
           <p class="text-[10px] text-olive">${inc.date || ''} ${inc.note ? '• ' + inc.note : ''}</p>
         </div>
         <div class="flex items-center gap-2">
           <span class="font-extrabold text-clay text-sm">+${fmt(inc.amount)}</span>
-          <button onclick="deleteIncome(${inc.id})" class="text-olive hover:text-clay p-1">
+          <button onclick="deleteIncome(${inc.id})" class="text-olive hover:text-clay p-1 transition-colors" title="${t('deleteBtn')}">
             <svg class="w-3.5 h-3.5"><use href="#x"/></svg>
           </button>
         </div>
@@ -974,7 +1392,6 @@ function renderStats() {
     `).join('');
   }
 
-  // Простой чистый SVG график
   renderIncomeChart();
 }
 
@@ -984,7 +1401,7 @@ function renderIncomeChart() {
   const incomes = currentStats.incomes || [];
 
   if (!incomes.length) {
-    chart.innerHTML = '<div class="m-auto text-xs text-olive">Барои сохтани график даромад сабт намоед</div>';
+    chart.innerHTML = `<div class="m-auto text-xs text-olive">${t('chartEmpty')}</div>`;
     labels.innerHTML = '';
     return;
   }
@@ -995,9 +1412,9 @@ function renderIncomeChart() {
   chart.innerHTML = last7.map(x => {
     const h = Math.max(16, Math.round((x.amount / max) * 140));
     return `
-      <div class="flex-1 flex flex-col items-center gap-1 group">
-        <span class="text-[10px] font-bold text-olive opacity-0 group-hover:opacity-100 transition-opacity">${x.amount}</span>
-        <div class="w-full max-w-[36px] bg-ink group-hover:bg-clay transition-all rounded-t-lg" style="height:${h}px"></div>
+      <div class="flex-1 flex flex-col items-center gap-1 group cursor-pointer">
+        <span class="text-[10px] font-bold text-olive opacity-0 group-hover:opacity-100 transition-opacity duration-200">${x.amount}</span>
+        <div class="w-full max-w-[36px] bg-ink group-hover:bg-clay transition-all duration-300 rounded-t-lg shadow-sm" style="height:${h}px"></div>
       </div>`;
   }).join('');
 
@@ -1010,16 +1427,29 @@ function openIncomeModal() {
   $('#incomeAmount').value = '';
   $('#incomeProduct').value = '';
   $('#incomeNote').value = '';
-  $('#incomeModal').classList.remove('hidden');
+  const modal = $('#incomeModal');
+  const overlay = $('#incomeModalOverlay');
+  const box = $('#incomeModalBox');
+  modal.classList.remove('hidden');
+  requestAnimationFrame(() => {
+    overlay.classList.add('active');
+    box.classList.add('active');
+  });
 }
+
 function closeIncomeModal() {
-  $('#incomeModal').classList.add('hidden');
+  const modal = $('#incomeModal');
+  const overlay = $('#incomeModalOverlay');
+  const box = $('#incomeModalBox');
+  overlay.classList.remove('active');
+  box.classList.remove('active');
+  setTimeout(() => modal.classList.add('hidden'), 320);
 }
 
 $('#incomeForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const amount = parseFloat($('#incomeAmount').value);
-  const product = $('#incomeProduct').value.trim() || 'Фурӯши мол';
+  const product = $('#incomeProduct').value.trim() || t('saleDefault');
   const note = $('#incomeNote').value.trim();
   const now = new Date();
   const date = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
@@ -1039,7 +1469,7 @@ $('#incomeForm').addEventListener('submit', async (e) => {
   localStorage.setItem('step_cached_stats', JSON.stringify(currentStats));
 
   closeIncomeModal();
-  toast(`+${fmt(amount)} сабт шуд!`, 'check');
+  toast(t('toastIncomeRecorded').replace('{amt}', fmt(amount)), 'check');
   renderStats();
 });
 
@@ -1061,16 +1491,16 @@ async function deleteIncome(id) {
 function renderNotes() {
   const list = $('#notesList');
   if (!currentNotes.length) {
-    list.innerHTML = '<div class="text-center text-olive py-8 text-xs">Ҳоло ягон қайд нест</div>';
+    list.innerHTML = `<div class="text-center text-olive py-8 text-xs">${t('noNotes')}</div>`;
     return;
   }
   list.innerHTML = currentNotes.map(n => `
-    <div class="flex items-center justify-between p-3.5 bg-white rounded-2xl border border-ink/10 shadow-sm gap-3">
+    <div class="flex items-center justify-between p-3.5 bg-white rounded-2xl border border-ink/10 shadow-sm gap-3 admin-card">
       <label class="flex items-center gap-3 flex-1 cursor-pointer min-w-0">
-        <input type="checkbox" ${n.completed ? 'checked' : ''} onchange="toggleNote(${n.id})" class="w-4 h-4 rounded text-ink focus:ring-0">
-        <span class="text-sm ${n.completed ? 'line-through text-olive' : 'font-medium text-ink'} break-words">${n.text}</span>
+        <input type="checkbox" ${n.completed ? 'checked' : ''} onchange="toggleNote(${n.id})" class="w-4 h-4 rounded text-ink focus:ring-0 cursor-pointer">
+        <span class="text-sm ${n.completed ? 'line-through text-olive' : 'font-medium text-ink'} break-words transition-colors">${n.text}</span>
       </label>
-      <button onclick="deleteNote(${n.id})" class="text-olive hover:text-clay p-1">
+      <button onclick="deleteNote(${n.id})" class="text-olive hover:text-clay p-1 transition-colors" title="${t('deleteBtn')}">
         <svg class="w-4 h-4"><use href="#trash"/></svg>
       </button>
     </div>
@@ -1128,10 +1558,14 @@ function toast(msg, icon = 'check') {
   el.innerHTML = `<svg class="w-4 h-4 text-clay shrink-0"><use href="#${icon}"/></svg><span>${msg}</span>`;
   $('#toasts').appendChild(el);
   requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
-  setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 400); }, 2800);
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => el.remove(), 380);
+  }, 2800);
 }
 
 // Инициализация при старте
+applyAdminLang();
 checkAuth();
 </script>
 </body>

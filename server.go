@@ -17,19 +17,20 @@ import (
 )
 
 var (
-	dataMu       sync.Mutex
+	dataMu        sync.Mutex
 	sessionTokens = make(map[string]string) // token -> username
 	tokenMu       sync.RWMutex
 )
 
 const (
-	AdminUser = "Firdavs"
+	AdminUser = "ADMIN"
 	AdminCode = "0016"
 )
 
 type Product struct {
 	ID        int      `json:"id"`
 	Name      string   `json:"name"`
+	NameTJ    string   `json:"nameTJ,omitempty"`
 	Brand     string   `json:"brand,omitempty"`
 	Cat       string   `json:"cat"`
 	CatName   string   `json:"catName"`
@@ -48,12 +49,82 @@ type Product struct {
 	CreatedAt string   `json:"createdAt,omitempty"`
 }
 
+var defaultCatNames = map[string][2]string{
+	"sneakers": {"Кроссовки", "Кроссовкаҳо"},
+	"outdoors": {"Аутдор", "Аутдор"},
+	"casual":   {"Кэжуал", "Кэжуал"},
+	"classic":  {"Классика", "Классикӣ"},
+}
+
+func normalizeProduct(p *Product, existing *Product) {
+	if p.Cat != "" {
+		if pair, ok := defaultCatNames[p.Cat]; ok {
+			if p.CatName == "" {
+				p.CatName = pair[0]
+			}
+			if p.CatNameTJ == "" {
+				p.CatNameTJ = pair[1]
+			}
+		}
+	}
+	if existing != nil {
+		if p.Name == "" && existing.Name != "" {
+			p.Name = existing.Name
+		}
+		if p.NameTJ == "" && existing.NameTJ != "" {
+			p.NameTJ = existing.NameTJ
+		}
+		if p.CatName == "" && existing.CatName != "" {
+			p.CatName = existing.CatName
+		}
+		if p.CatNameTJ == "" && existing.CatNameTJ != "" {
+			p.CatNameTJ = existing.CatNameTJ
+		}
+		if p.Desc == "" && existing.Desc != "" {
+			p.Desc = existing.Desc
+		}
+		if p.DescTJ == "" && existing.DescTJ != "" {
+			p.DescTJ = existing.DescTJ
+		}
+		if len(p.Specs) == 0 && len(existing.Specs) > 0 {
+			p.Specs = existing.Specs
+		}
+		if len(p.SpecsTJ) == 0 && len(existing.SpecsTJ) > 0 {
+			p.SpecsTJ = existing.SpecsTJ
+		}
+	}
+	if p.Name == "" && p.NameTJ != "" {
+		p.Name = p.NameTJ
+	}
+	if p.NameTJ == "" && p.Name != "" {
+		p.NameTJ = p.Name
+	}
+	if p.CatName == "" && p.CatNameTJ != "" {
+		p.CatName = p.CatNameTJ
+	}
+	if p.CatNameTJ == "" && p.CatName != "" {
+		p.CatNameTJ = p.CatName
+	}
+	if p.Desc == "" && p.DescTJ != "" {
+		p.Desc = p.DescTJ
+	}
+	if p.DescTJ == "" && p.Desc != "" {
+		p.DescTJ = p.Desc
+	}
+	if len(p.Specs) == 0 && len(p.SpecsTJ) > 0 {
+		p.Specs = p.SpecsTJ
+	}
+	if len(p.SpecsTJ) == 0 && len(p.Specs) > 0 {
+		p.SpecsTJ = p.Specs
+	}
+}
+
 type IncomeRecord struct {
-	ID       int64   `json:"id"`
-	Amount   float64 `json:"amount"`
-	Product  string  `json:"product"`
-	Date     string  `json:"date"`
-	Note     string  `json:"note"`
+	ID      int64   `json:"id"`
+	Amount  float64 `json:"amount"`
+	Product string  `json:"product"`
+	Date    string  `json:"date"`
+	Note    string  `json:"note"`
 }
 
 type ClickRecord struct {
@@ -115,8 +186,7 @@ func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		user, exists := sessionTokens[token]
 		tokenMu.RUnlock()
 
-		// Also accept a persistent master token or valid session
-		if !exists && token != "step-firdavs-permanent-0016" {
+		if !exists {
 			http.Error(w, `{"error":"Unauthorized"}`, http.StatusUnauthorized)
 			return
 		}
@@ -171,6 +241,15 @@ func main() {
 		})
 	})
 
+	mux.HandleFunc("/api/auth/check", authMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]any{"success": true})
+	}))
+
 	// 2. Products API (GET public, POST/PUT/DELETE protected)
 	mux.HandleFunc("/api/products", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -183,6 +262,27 @@ func main() {
 
 		switch r.Method {
 		case http.MethodGet:
+			lang := strings.ToLower(r.URL.Query().Get("lang"))
+			if lang == "tj" || lang == "tg" {
+				localized := make([]Product, len(products))
+				for i, p := range products {
+					if p.NameTJ != "" {
+						p.Name = p.NameTJ
+					}
+					if p.CatNameTJ != "" {
+						p.CatName = p.CatNameTJ
+					}
+					if p.DescTJ != "" {
+						p.Desc = p.DescTJ
+					}
+					if len(p.SpecsTJ) > 0 {
+						p.Specs = p.SpecsTJ
+					}
+					localized[i] = p
+				}
+				json.NewEncoder(w).Encode(localized)
+				return
+			}
 			json.NewEncoder(w).Encode(products)
 
 		case http.MethodPost:
@@ -204,12 +304,7 @@ func main() {
 			if p.SKU == "" {
 				p.SKU = fmt.Sprintf("STP-%02d", p.ID)
 			}
-			if p.CatNameTJ == "" {
-				p.CatNameTJ = p.CatName
-			}
-			if p.DescTJ == "" {
-				p.DescTJ = p.Desc
-			}
+			normalizeProduct(&p, nil)
 			products = append([]Product{p}, products...)
 			if err := writeJSONFile(productsPath, products); err != nil {
 				http.Error(w, `{"error":"Failed to save"}`, http.StatusInternalServerError)
@@ -226,6 +321,7 @@ func main() {
 			found := false
 			for i, item := range products {
 				if item.ID == p.ID {
+					normalizeProduct(&p, &item)
 					products[i] = p
 					found = true
 					break
