@@ -284,6 +284,15 @@ const INSTAGRAM_USER  = 'step.styletj';  // юзернейм Instagram без @
 
 const CUR = 'смн';
 
+/* Домен сайта — чтобы ссылка на фото в тексте заказа была полноценной (https://вашсайт/uploads/...).
+   По умолчанию берётся автоматически из адреса страницы. Можно вписать свой: 'https://stepstyle.tj' */
+const SITE_URL = (location.protocol === 'http:' || location.protocol === 'https:') ? location.origin : '';
+const absoluteUrl = (u) => {
+  if (/^https?:\/\//i.test(u)) return u;
+  if (SITE_URL) return SITE_URL + '/' + String(u).replace(/^\//, '');
+  return u;
+};
+
 /* ============================================================
    ЯЗЫКИ: тоҷикӣ / русский (по умолчанию — тоҷикӣ)
    ============================================================ */
@@ -605,7 +614,7 @@ function buildOrderText(p, size) {
   text += `${t('orderGoods')} ${p.name}\n`;
   text += `${t('orderInfo')} ${catName}, ${t('orderArt')} ${p.sku}, ${t('orderSizeLabel')} ${size}\n`;
   text += `${t('orderPrice')} ${fmt(p.price)}\n`;
-  text += `${t('orderPhoto')} ${photoUrl(p.sku, p.seed, 800, 1000)}`;
+  text += `${t('orderPhoto')} ${absoluteUrl(photoUrl(p.sku, p.seed, 800, 1000))}`;
   return text;
 }
 
@@ -666,43 +675,47 @@ function wrapLines(ctx, text, maxWidth, font) {
   return out;
 }
 
-async function copyOrderCard(p, orderText) {
-  const url = photoUrl(p.sku, p.seed, 1080, 1350);
-  let im = $('#pmImg');
-  if (!im || !im.naturalWidth || new URL(im.src, location.href).href !== new URL(url, location.href).href) {
-    im = await loadImg(url);
-  }
-  const W = 1080;
-  const gap = 60;
-  const Himg = Math.round(W * im.naturalHeight / im.naturalWidth);
-  const cardText = orderText.split('\n').filter(l => !l.startsWith(t('orderPhoto'))).join('\n');
+async function copyOrderCard(p, orderText, url) {
+  if (typeof ClipboardItem === 'undefined') throw new Error('no ClipboardItem');
+  const itemPromise = (async () => {
+    let im = $('#pmImg');
+    if (!im || !im.naturalWidth || new URL(im.src, location.href).href !== new URL(url, location.href).href) {
+      im = await loadImg(url);
+    }
+    const W = 1080;
+    const gap = 60;
+    const Himg = Math.round(W * im.naturalHeight / im.naturalWidth);
+    const cardText = orderText.split('\n').filter(l => !l.startsWith(t('orderPhoto'))).join('\n');
 
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  const padX = 56, padY = 48;
-  const blockW = W - padX * 2;
-  const titleFont = '700 46px Unbounded, sans-serif';
-  const bodyFont = '600 40px Manrope, sans-serif';
-  ctx.font = titleFont;
-  const titleLines = wrapLines(ctx, t('orderNew'), blockW, titleFont);
-  const bodyLines = wrapLines(ctx, cardText, blockW, bodyFont);
-  const lineH = 58;
-  const blockH = padY * 2 + titleLines.length * lineH + 26 + bodyLines.length * lineH;
-  canvas.width = W;
-  canvas.height = Himg + gap + blockH;
-  ctx.fillStyle = '#1B1611';
-  ctx.fillRect(0, 0, W, canvas.height);
-  ctx.drawImage(im, 0, 0, W, Himg);
-  ctx.fillStyle = '#F3EFE6';
-  ctx.font = titleFont;
-  let y = Himg + gap + padY;
-  for (const l of titleLines) { ctx.fillText(l, padX, y); y += lineH; }
-  y += 26;
-  ctx.font = bodyFont;
-  for (const l of bodyLines) { ctx.fillText(l, padX, y); y += lineH; }
-  const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-  if (!blob) throw new Error('no blob');
-  await navigator.clipboard.write(new ClipboardItem({ 'image/png': blob }));
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const padX = 56, padY = 48;
+    const blockW = W - padX * 2;
+    const titleFont = '700 46px Unbounded, sans-serif';
+    const bodyFont = '600 40px Manrope, sans-serif';
+    ctx.font = titleFont;
+    const titleLines = wrapLines(ctx, t('orderNew'), blockW, titleFont);
+    const bodyLines = wrapLines(ctx, cardText, blockW, bodyFont);
+    const lineH = 58;
+    const blockH = padY * 2 + titleLines.length * lineH + 26 + bodyLines.length * lineH;
+    canvas.width = W;
+    canvas.height = Himg + gap + blockH;
+    ctx.fillStyle = '#1B1611';
+    ctx.fillRect(0, 0, W, canvas.height);
+    ctx.drawImage(im, 0, 0, W, Himg);
+    ctx.fillStyle = '#F3EFE6';
+    ctx.font = titleFont;
+    let y = Himg + gap + padY;
+    for (const l of titleLines) { ctx.fillText(l, padX, y); y += lineH; }
+    y += 26;
+    ctx.font = bodyFont;
+    for (const l of bodyLines) { ctx.fillText(l, padX, y); y += lineH; }
+    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    if (!blob) throw new Error('no blob');
+    return blob;
+  })();
+  const item = new ClipboardItem({ 'image/png': itemPromise });
+  await navigator.clipboard.write([item]);
   return true;
 }
 
@@ -722,6 +735,7 @@ function copyTextLegacy(text) {
 
 async function sendViaInstagram() {
   const text = buildOrderText(currentProduct, selectedSize);
+  const url = photoUrl(currentProduct.sku, currentProduct.seed, 1080, 1350);
   let copied = false, hadImage = false;
   if (navigator.clipboard && navigator.clipboard.writeText) {
     try { await navigator.clipboard.writeText(text); copied = true; }
@@ -729,11 +743,11 @@ async function sendViaInstagram() {
   } else {
     copied = copyTextLegacy(text);
   }
+  window.open(`https://ig.me/m/${INSTAGRAM_USER}`, '_blank');
   try {
-    await copyOrderCard(currentProduct, text);
+    await copyOrderCard(currentProduct, text, url);
     hadImage = true;
   } catch (e) { }
-  window.open(`https://ig.me/m/${INSTAGRAM_USER}`, '_blank');
   finishOrder('Instagram', copied, hadImage);
 }
 
