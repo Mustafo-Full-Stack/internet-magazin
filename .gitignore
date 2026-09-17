@@ -1,0 +1,7 @@
+# Executable binaries
+server
+*.exe
+
+# OS files
+.DS_Store
+Thumbs.db

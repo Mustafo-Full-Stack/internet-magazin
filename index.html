@@ -363,7 +363,7 @@ let lang = (typeof localStorage !== 'undefined' && localStorage.getItem('step_la
 if (!I18N[lang]) lang = 'tj';
 const t = (k) => (I18N[lang][k] != null ? I18N[lang][k] : I18N.ru[k]);
 
-const PRODUCTS = [
+let PRODUCTS = [
   { id:1,  name:'Huntto Outdoor', cat:'sneakers', catName:'Кроссовки', catNameTJ:'Кроссовкаҳо', price:350,   oldPrice:null, badge:'new', sku:'STP-01', seed:'hunto-outdoor',
     desc:'Спортивно-трекинговые кроссовки для прогулок и активного отдыха: амортизирующая подошва смягчает шаг, дышащий верх сохраняет комфорт в течение дня, а рельефная подошва подходит для троп, парков и неровных поверхностей.',
     descTJ:'Кроссовкаи варзишӣ-сайёҳӣ барои сайругашт ва истироҳати фаъол: кафи амортизатсионӣ қадамро мулоим мегардонад, рӯйпӯши нафасгузар тамоми рӯз роҳатро нигоҳ медорад, кафи рельефӣ бошад барои пиёдагардҳо, боғҳо ва сатҳҳои ноҳамвор мувофиқ аст.',
@@ -481,8 +481,16 @@ const PHOTOS = {
 };
 
 const picsum  = (seed, w, h) => `https://picsum.photos/seed/${seed}/${w}/${h}.jpg`;
-const shots   = (sku) => PHOTOS[sku] || [];
-const photoUrl = (sku, seed, w, h) => shots(sku)[0] || picsum(seed, w, h);
+const shots   = (sku) => {
+  const p = PRODUCTS.find(x => x.sku === sku);
+  if (p && p.photos && p.photos.length) return p.photos;
+  return PHOTOS[sku] || [];
+};
+const photoUrl = (sku, seed, w, h) => {
+  const p = PRODUCTS.find(x => x.sku === sku);
+  if (p && p.photos && p.photos.length) return p.photos[0];
+  return shots(sku)[0] || picsum(seed, w, h);
+};
 const productById = (id) => PRODUCTS.find(p => p.id === id);
 const icons = () => {};
 function lockScroll() { document.body.style.overflow = (modalOpen || orderOpen) ? 'hidden' : ''; }
@@ -699,6 +707,16 @@ function closeOrderModal() {
 async function sendViaWhatsApp() {
   const p = currentProduct, text = buildOrderText(p, selectedSize);
   closeOrderModal();
+  try {
+    fetch('/api/analytics/click', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId: p ? p.id : 0, name: p ? p.name : '' })
+    }).catch(() => {});
+    const cs = JSON.parse(localStorage.getItem('step_cached_stats') || '{"whatsappOrders":0}');
+    cs.whatsappOrders = (cs.whatsappOrders || 0) + 1;
+    localStorage.setItem('step_cached_stats', JSON.stringify(cs));
+  } catch (_) {}
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
   finishOrder('WhatsApp');
 }
@@ -917,11 +935,38 @@ window.addEventListener('scroll', () => {
   $('#siteHeader').classList.toggle('shadow-md', window.scrollY > 10);
 }, { passive: true });
 
+async function loadDynamicProducts() {
+  try {
+    const res = await fetch('/api/products');
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length) {
+        PRODUCTS = data;
+        localStorage.setItem('step_cached_products', JSON.stringify(PRODUCTS));
+        renderCatalog();
+        return;
+      }
+    }
+  } catch (_) {}
+
+  try {
+    const cached = localStorage.getItem('step_cached_products');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length) {
+        PRODUCTS = parsed;
+        renderCatalog();
+      }
+    }
+  } catch (_) {}
+}
+
 /* ============================================================
    Инициализация
    ============================================================ */
 applyLang();
 renderCatalog();
+loadDynamicProducts();
 icons();
 $('#year').textContent = new Date().getFullYear();
 
