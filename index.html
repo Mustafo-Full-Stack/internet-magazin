@@ -317,7 +317,7 @@ const I18N = {
     addressText: 'Душанбе, Б. Корвон, д. 10, кв. 6 (подвал)',
     deliveryText: 'Доставка по всей РТ',
     copyright: 'STEP style.tj — все права защищены',
-    toastCopy: 'Текст заказа скопирован — вставь в директ', toastCopyCard: 'Фото и текст заказа скопированы — вставь в директ',
+    toastCopy: 'Текст заказа скопирован — вставь в директ', toastCopyCard: 'Фото и текст заказа скопированы — вставь в директ', toastPhoto: 'Фото заказа сохранено — прикрепи его в директ',
     toastSent: 'Заказ отправлен в {via}',
     toastSize: 'Открой карточку товара — там есть таблица размеров',
     orderNew: 'Новый заказ — STEP style.tj',
@@ -344,7 +344,7 @@ const I18N = {
     addressText: 'Душанбе, кӯч. Корвон, х. 10, ошёнаи 6 (таҳхона)',
     deliveryText: 'Дар тамоми Ҷумҳурии Тоҷикистон интиқол медиҳем',
     copyright: 'STEP style.tj — ҳама ҳуқуқҳо ҳифз шудаанд',
-    toastCopy: 'Матни фармоиш нусхабардорӣ шуд — ба директ гузоред', toastCopyCard: 'Акс ва матни фармоиш нусхабардорӣ шуд — ба директ гузоред',
+    toastCopy: 'Матни фармоиш нусхабардорӣ шуд — ба директ гузоред', toastCopyCard: 'Акс ва матни фармоиш нусхабардорӣ шуд — ба директ гузоред', toastPhoto: 'Акси фармоиш нигоҳ дошта шуд — онро ба директ васл кунед',
     toastSent: 'Фармоиш ба {via} фиристода шуд',
     toastSize: 'Варақаи молро кушоед — ҷадвали андоза дар дохили он аст',
     orderNew: 'Фармоиши нав — STEP style.tj',
@@ -675,48 +675,62 @@ function wrapLines(ctx, text, maxWidth, font) {
   return out;
 }
 
-async function copyOrderCard(p, orderText, url) {
-  if (typeof ClipboardItem === 'undefined') throw new Error('no ClipboardItem');
-  const itemPromise = (async () => {
-    let im = $('#pmImg');
-    if (!im || !im.naturalWidth || new URL(im.src, location.href).href !== new URL(url, location.href).href) {
-      im = await loadImg(url);
-    }
-    const W = 1080;
-    const gap = 60;
-    const Himg = Math.round(W * im.naturalHeight / im.naturalWidth);
-    const cardText = orderText.split('\n').filter(l => !l.startsWith(t('orderPhoto'))).join('\n');
+async function buildOrderCard(p, orderText, url) {
+  let im = $('#pmImg');
+  if (!im || !im.naturalWidth || new URL(im.src, location.href).href !== new URL(url, location.href).href) {
+    im = await loadImg(url);
+  }
+  const W = 1080;
+  const gap = 60;
+  const Himg = Math.round(W * im.naturalHeight / im.naturalWidth);
+  const cardText = orderText.split('\n').filter(l => !l.startsWith(t('orderPhoto'))).join('\n');
 
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const padX = 56, padY = 48;
-    const blockW = W - padX * 2;
-    const titleFont = '700 46px Unbounded, sans-serif';
-    const bodyFont = '600 40px Manrope, sans-serif';
-    ctx.font = titleFont;
-    const titleLines = wrapLines(ctx, t('orderNew'), blockW, titleFont);
-    const bodyLines = wrapLines(ctx, cardText, blockW, bodyFont);
-    const lineH = 58;
-    const blockH = padY * 2 + titleLines.length * lineH + 26 + bodyLines.length * lineH;
-    canvas.width = W;
-    canvas.height = Himg + gap + blockH;
-    ctx.fillStyle = '#1B1611';
-    ctx.fillRect(0, 0, W, canvas.height);
-    ctx.drawImage(im, 0, 0, W, Himg);
-    ctx.fillStyle = '#F3EFE6';
-    ctx.font = titleFont;
-    let y = Himg + gap + padY;
-    for (const l of titleLines) { ctx.fillText(l, padX, y); y += lineH; }
-    y += 26;
-    ctx.font = bodyFont;
-    for (const l of bodyLines) { ctx.fillText(l, padX, y); y += lineH; }
-    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
-    if (!blob) throw new Error('no blob');
-    return blob;
-  })();
-  const item = new ClipboardItem({ 'image/png': itemPromise });
-  await navigator.clipboard.write([item]);
-  return true;
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const padX = 56, padY = 48;
+  const blockW = W - padX * 2;
+  const titleFont = '700 46px Unbounded, sans-serif';
+  const bodyFont = '600 40px Manrope, sans-serif';
+  ctx.font = titleFont;
+  const titleLines = wrapLines(ctx, t('orderNew'), blockW, titleFont);
+  const bodyLines = wrapLines(ctx, cardText, blockW, bodyFont);
+  const lineH = 58;
+  const blockH = padY * 2 + titleLines.length * lineH + 26 + bodyLines.length * lineH;
+  canvas.width = W;
+  canvas.height = Himg + gap + blockH;
+  ctx.fillStyle = '#1B1611';
+  ctx.fillRect(0, 0, W, canvas.height);
+  ctx.drawImage(im, 0, 0, W, Himg);
+  ctx.fillStyle = '#F3EFE6';
+  ctx.font = titleFont;
+  let y = Himg + gap + padY;
+  for (const l of titleLines) { ctx.fillText(l, padX, y); y += lineH; }
+  y += 26;
+  ctx.font = bodyFont;
+  for (const l of bodyLines) { ctx.fillText(l, padX, y); y += lineH; }
+  const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+  if (!blob) throw new Error('no blob');
+  return blob;
+}
+
+async function shareOrderCard(p, orderText) {
+  try {
+    const url = photoUrl(p.sku, p.seed, 1080, 1350);
+    const blob = await buildOrderCard(p, orderText, url);
+    const file = new File([blob], 'zakaz-step-style.png', { type: 'image/png' });
+    if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: t('orderNew') });
+      return;
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'zakaz-step-style.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+    toast(t('toastPhoto'), 'check');
+  } catch (e) { /* "Поделиться" отменено или не поддерживается — текст уже в буфере */ }
 }
 
 function copyTextLegacy(text) {
@@ -733,28 +747,26 @@ function copyTextLegacy(text) {
   } catch (_) { return false; }
 }
 
-async function sendViaInstagram() {
-  const text = buildOrderText(currentProduct, selectedSize);
-  const url = photoUrl(currentProduct.sku, currentProduct.seed, 1080, 1350);
-  let copied = false, hadImage = false;
+async function copyTextNow(text) {
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    try { await navigator.clipboard.writeText(text); copied = true; }
-    catch (e) { copied = copyTextLegacy(text); }
-  } else {
-    copied = copyTextLegacy(text);
+    try { await navigator.clipboard.writeText(text); return true; }
+    catch (e) { return copyTextLegacy(text); }
   }
-  window.open(`https://ig.me/m/${INSTAGRAM_USER}`, '_blank');
-  try {
-    await copyOrderCard(currentProduct, text, url);
-    hadImage = true;
-  } catch (e) { }
-  finishOrder('Instagram', copied, hadImage);
+  return copyTextLegacy(text);
 }
 
-function finishOrder(via, copiedText = false, hadImage = false) {
+async function sendViaInstagram() {
+  const text = buildOrderText(currentProduct, selectedSize);
+  const copied = await copyTextNow(text);
+  window.open(`https://ig.me/m/${INSTAGRAM_USER}`, '_blank');
+  finishOrder('Instagram', copied);
+  shareOrderCard(currentProduct, text);
+}
+
+function finishOrder(via, copiedText = false) {
   closeOrderModal();
-  if (via === 'Instagram' && (copiedText || hadImage)) {
-    toast(hadImage ? t('toastCopyCard') : t('toastCopy'), 'clipboard-check');
+  if (via === 'Instagram' && copiedText) {
+    toast(t('toastCopy'), 'clipboard-check');
   } else {
     toast(t('toastSent').replace('{via}', via), 'check');
   }
