@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#1B1611" />
+<title>STEP style.tj — магазин обуви</title>
+<meta name="description" content="STEP style.tj — магазин обуви в Душанбе. Кроссовки, ботинки, классика и кэжуал. Новые поступления каждую неделю.">
+<meta property="og:title" content="STEP style.tj — магазин обуви" />
+<meta property="og:description" content="Кроссовки, ботинки, классика и кэжуал. Новые поступления каждую неделю." />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="ru_RU" />
+<link rel="icon" type="image/png" sizes="256x256" href="uploads/logo/favicon.png">
+<link rel="apple-touch-icon" href="uploads/logo/favicon.png">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          cream: '#F3EFE6',
+          ink:   '#1B1611',
+          clay:  '#D9541E',
+          sand:  '#E7E0D2',
+          olive: '#7A7263'
+        },
+        fontFamily: {
+          display: ['Unbounded', 'sans-serif'],
+          body: ['Manrope', 'sans-serif']
+        }
+      }
+    }
+  }
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://picsum.photos">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+
+<style>
+  :root { color-scheme: light; }
+  html { -webkit-text-size-adjust:100%; }
+  body { -webkit-tap-highlight-color: transparent; overflow-x:hidden; }
+  ::selection { background:#D9541E; color:#F3EFE6; }
+
+  ::-webkit-scrollbar { width:10px; height:10px; }
+  ::-webkit-scrollbar-track { background:#F3EFE6; }
+  ::-webkit-scrollbar-thumb { background:#c9c2b2; border-radius:99px; border:3px solid #F3EFE6; }
+  ::-webkit-scrollbar-thumb:hover { background:#7A7263; }
+
+  .reveal-item { opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s cubic-bezier(.22,1,.36,1); }
+  .reveal-item.in-view { opacity:1; transform:none; }
+
+  .pmodal-panel { transform:translateY(100%); transition:transform .5s cubic-bezier(.22,1,.36,1); }
+  @media (min-width:768px){
+    .pmodal-panel { transform:translateY(24px) scale(.97); opacity:0; transition:transform .45s cubic-bezier(.22,1,.36,1), opacity .35s ease; }
+  }
+  .pmodal-panel.opened { transform:none; opacity:1; }
+
+  @keyframes shake { 10%,90%{transform:translateX(-1px)} 20%,80%{transform:translateX(2px)} 30%,50%,70%{transform:translateX(-4px)} 40%,60%{transform:translateX(4px)} }
+  .shake { animation:shake .5s ease; }
+
+  .toast { transform:translateY(16px); opacity:0; transition:all .4s cubic-bezier(.22,1,.36,1); }
+  .toast.show { transform:none; opacity:1; }
+</style>
+</head>
+
+<body class="bg-cream text-ink font-body antialiased">
+
+<!-- Спрайт иконок (рисуются всегда, без внешних CDN) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.11 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+  <symbol id="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></symbol>
+  <symbol id="arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="ruler" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 8.7 15.3 2.7 2.7 15.3l5.6 5.6 8.4-8.4 5.6 5.6 4-12-12 4z"/><path d="m14.5 12.5 2 2"/><path d="m11.5 9.5 2 2"/></symbol>
+  <symbol id="clipboard-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></symbol>
+  <symbol id="cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></symbol>
+  <symbol id="wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></symbol>
+  <symbol id="ig" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></symbol>
+</svg>
+
+<!-- ========================= ШАПКА (без корзины) ========================= -->
+<header id="siteHeader" class="sticky top-0 z-40 bg-cream/90 backdrop-blur-md border-b border-ink/10">
+  <div class="max-w-[1280px] mx-auto px-4 md:px-8 h-16 md:h-[72px] flex items-center justify-between">
+    <div class="flex items-center gap-2.5 md:gap-4">
+    <a href="#" class="flex items-center" aria-label="STEP style.tj">
+      <img src="uploads/logo/Step_Style_header.png" alt="STEP style.tj" class="h-10 md:h-12 w-auto">
+    </a>
+    <a id="headerIg" href="#" target="_blank" rel="noopener" class="flex items-center gap-1.5 text-xs md:text-sm font-bold hover:text-clay transition-colors" aria-label="Instagram @Step.styletj">
+      <svg class="w-4 h-4 md:w-5 md:h-5 text-clay" aria-hidden="true"><use href="#ig"/></svg>
+      <span class="hidden sm:inline underline underline-offset-4 decoration-ink/30 hover:decoration-clay">@Step.styletj</span>
+    </a>
+  </div>
+
+    <div class="flex items-center gap-2.5 md:gap-5">
+      <a href="tel:+992172383030" class="hidden md:flex items-center gap-2 text-sm font-semibold hover:text-clay transition-colors">
+        <svg class="w-4 h-4" aria-hidden="true"><use href="#phone"/></svg> +992 17 238-30-30
+      </a>
+      <div id="langSwitch" class="flex items-center rounded-full border border-ink/15 overflow-hidden text-xs font-bold select-none" role="group" aria-label="Язык">
+        <button class="lang-btn px-2.5 py-2 bg-ink text-cream" data-lang="tj" aria-label="Тоҷикӣ">ТҶ</button>
+        <button class="lang-btn px-2.5 py-2 text-ink/60" data-lang="ru" aria-label="Русский">RU</button>
+      </div>
+      <a id="headerWa" href="#" target="_blank" rel="noopener" class="flex items-center gap-2 bg-ink text-cream rounded-full px-4 md:px-5 h-11 text-xs md:text-sm font-semibold hover:bg-clay transition-colors">
+        <svg class="w-4 h-4" aria-hidden="true"><use href="#wa"/></svg> <span class="hidden sm:inline" data-i18n="navWrite">Написать</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ========================= КАТАЛОГ ========================= -->
+  <section class="max-w-[1280px] mx-auto px-4 md:px-8 pt-7 md:pt-12 pb-14 md:pb-20">
+    <div class="flex items-end justify-between gap-3">
+      <div>
+        <h1 class="font-display font-extrabold text-3xl md:text-4xl leading-none" data-i18n="catTitle">Каталог</h1>
+        <p class="text-sm text-olive mt-2"><b id="catCount" class="text-ink">3</b> <span id="catSuffix">товара в наличии</span></p>
+      </div>
+      <p class="hidden sm:block text-xs text-olive pb-1" data-i18n="catTip">Нажми на товар, чтобы выбрать размер и заказать</p>
+    </div>
+
+    <div id="catFilters" class="mt-5 md:mt-8 flex flex-wrap items-center gap-2">
+      <button class="cat-btn bg-ink text-cream border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="all" data-i18n="cat_all">Все</button>
+      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="sneakers" data-i18n="cat_sneakers">Кроссовки</button>
+      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="boots" data-i18n="cat_boots">Ботинки</button>
+      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="classic" data-i18n="cat_classic">Классика</button>
+      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="casual" data-i18n="cat_casual">Кэжуал</button>
+      <button class="cat-btn bg-white text-ink/60 border-ink/15 hover:text-ink hover:border-ink rounded-full px-3.5 md:px-5 py-2 text-xs md:text-sm font-semibold border transition-colors" data-cat="outdoors" data-i18n="cat_outdoors">Аутдор</button>
+    </div>
+
+    <div id="productGrid" class="mt-6 md:mt-8 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-6"></div>
+  </section>
+</main>
+
+<!-- ========================= ФУТЕР ========================= -->
+<footer class="bg-ink text-cream mt-4">
+  <div class="max-w-[1280px] mx-auto px-4 md:px-8 py-10 md:py-14 flex flex-col md:flex-row md:items-start justify-between gap-8">
+    <div>
+<div class="flex items-center">
+          <img src="uploads/logo/Step_Style_ultra.png" alt="STEP style.tj" class="h-14 w-auto">
+        </div>
+      <p class="mt-4 text-sm text-cream/55 max-w-xs" data-i18n="footerTagline">Магазин обуви. Новые поступления каждую неделю.</p>
+      <div class="mt-5 flex gap-2.5">
+        <a id="footerWa" href="#" target="_blank" rel="noopener" class="flex items-center gap-2 bg-cream/10 hover:bg-cream/20 rounded-full px-4 py-2.5 text-xs font-semibold transition-colors">
+          <svg class="w-4 h-4 text-clay" aria-hidden="true"><use href="#wa"/></svg> WhatsApp
+        </a>
+        <a id="footerIg" href="#" target="_blank" rel="noopener" class="flex items-center gap-2 bg-cream/10 hover:bg-cream/20 rounded-full px-4 py-2.5 text-xs font-semibold transition-colors">
+          <svg class="w-4 h-4 text-clay" aria-hidden="true"><use href="#ig"/></svg> Instagram
+        </a>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-x-12 gap-y-8 md:gap-x-20 text-sm">
+      <div>
+        <p class="text-[11px] uppercase tracking-[0.2em] text-cream/40 font-bold mb-3" data-i18n="contactsTitle">Контакты</p>
+        <ul class="space-y-2.5">
+          <li><a href="tel:+992172383030" class="text-cream/75 hover:text-clay transition-colors">+992 17 238-30-30</a></li>
+          <li><a href="mailto:info@style.tj" class="text-cream/75 hover:text-clay transition-colors">info@style.tj</a></li>
+          <li class="text-cream/55" data-i18n="addressText">Душанбе, Б. Корвон, д. 10, кв. 6 (подвал)</li>
+          <li class="text-cream/55" data-i18n="deliveryText">Доставка по всей РТ</li>
+        </ul>
+      </div>
+      <div>
+        <p class="text-[11px] uppercase tracking-[0.2em] text-cream/40 font-bold mb-3" data-i18n="infoTitle">Инфо</p>
+        <ul class="space-y-2.5">
+          <li><button id="footerSizeTableBtn" class="text-cream/75 hover:text-clay transition-colors text-left" data-i18n="sizeTableBtn">Таблица размеров</button></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="border-t border-cream/10 py-4 text-center text-[11px] text-cream/40">© <span id="year"></span> <span data-i18n="copyright">STEP style.tj — все права защищены</span></div>
+</footer>
+
+<!-- ========================= ВЫБОР: WHATSAPP / INSTAGRAM ========================= -->
+<div id="orderModal" class="fixed inset-0 z-[75] hidden">
+  <div id="orderOverlay" class="absolute inset-0 bg-ink/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-500"></div>
+  <div class="absolute inset-0 flex items-end md:items-center justify-center md:p-6 pointer-events-none">
+    <div id="orderPanel" class="pmodal-panel pointer-events-auto relative w-full md:max-w-md bg-cream rounded-t-[1.75rem] md:rounded-[1.75rem] pt-6 px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:p-8 shadow-2xl">
+      <button id="orderCloseBtn" class="absolute top-4 right-4 w-10 h-10 rounded-full border border-ink/10 grid place-items-center hover:bg-ink hover:text-cream transition-colors" aria-label="Закрыть">
+        <svg class="w-[18px] h-[18px]" aria-hidden="true"><use href="#x"/></svg>
+      </button>
+
+      <div class="w-14 h-14 rounded-2xl bg-clay/10 text-clay grid place-items-center">
+        <svg class="w-7 h-7" aria-hidden="true"><use href="#send"/></svg>
+      </div>
+      <h3 class="font-display font-bold text-2xl mt-4 leading-tight" data-i18n="pmOrderTitle">Как отправить заказ?</h3>
+      <p id="orderSubtext" class="text-ink/60 text-sm mt-2" data-i18n="orderSubtext">Сообщение с товаром, размером и ценой подготовится автоматически — выбери мессенджер:</p>
+
+      <div class="mt-6 space-y-3">
+        <button id="sendWaBtn" class="group w-full flex items-center gap-4 rounded-2xl border border-ink/10 bg-white p-4 text-left hover:border-[#25D366] hover:shadow-md transition-all">
+          <span class="w-12 h-12 rounded-xl bg-[#25D366]/10 text-[#1DA851] grid place-items-center shrink-0 transition-transform group-hover:scale-110">
+            <svg class="w-6 h-6" aria-hidden="true"><use href="#wa"/></svg>
+          </span>
+          <span class="flex-1">
+            <span class="block font-bold">WhatsApp</span>
+            <span class="block text-xs text-olive mt-0.5" data-i18n="waSub">Откроется чат с готовым заказом</span>
+          </span>
+          <svg class="w-5 h-5 text-olive group-hover:text-[#1DA851] group-hover:translate-x-1 transition-all" aria-hidden="true"><use href="#arrow-right"/></svg>
+        </button>
+        <button id="sendIgBtn" class="group w-full flex items-center gap-4 rounded-2xl border border-ink/10 bg-white p-4 text-left hover:border-clay hover:shadow-md transition-all">
+          <span class="w-12 h-12 rounded-xl bg-clay/10 text-clay grid place-items-center shrink-0 transition-transform group-hover:scale-110">
+            <svg class="w-6 h-6" aria-hidden="true"><use href="#ig"/></svg>
+          </span>
+          <span class="flex-1">
+            <span class="block font-bold">Instagram</span>
+            <span class="block text-xs text-olive mt-0.5" data-i18n="igSub">Откроется директ, текст скопируется</span>
+          </span>
+          <svg class="w-5 h-5 text-olive group-hover:text-clay group-hover:translate-x-1 transition-all" aria-hidden="true"><use href="#arrow-right"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================= МОДАЛКА ТОВАРА ========================= -->
+<div id="productModal" class="fixed inset-0 z-[70] hidden">
+  <div id="pmodalOverlay" class="absolute inset-0 bg-ink/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-500"></div>
+  <div class="absolute inset-0 flex items-end md:items-center justify-center md:p-6 pointer-events-none">
+    <div id="pmodalPanel" class="pmodal-panel pointer-events-auto relative w-full md:max-w-4xl max-h-[92vh] md:max-h-[86vh] overflow-y-auto bg-cream rounded-t-[1.75rem] md:rounded-[1.75rem] shadow-2xl">
+      <button id="pmodalClose" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-cream/90 border border-ink/10 grid place-items-center hover:bg-ink hover:text-cream transition-colors" aria-label="Закрыть">
+        <svg class="w-[18px] h-[18px]" aria-hidden="true"><use href="#x"/></svg>
+      </button>
+      <div class="grid md:grid-cols-2">
+        <div class="bg-sand p-4 md:p-6">
+          <div class="relative rounded-2xl overflow-hidden aspect-square bg-white">
+            <img id="pmImg" src="" alt="" class="w-full h-full object-cover transition-opacity duration-300">
+            <button id="pmPrev" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-cream/90 border border-ink/10 grid place-items-center hover:bg-ink hover:text-cream transition-colors shadow-sm" aria-label="Назад">
+              <svg class="w-4 h-4 rotate-180" aria-hidden="true"><use href="#arrow-right"/></svg>
+            </button>
+            <button id="pmNext" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-cream/90 border border-ink/10 grid place-items-center hover:bg-ink hover:text-cream transition-colors shadow-sm" aria-label="Вперёд">
+              <svg class="w-4 h-4" aria-hidden="true"><use href="#arrow-right"/></svg>
+            </button>
+            <span id="pmCounter" class="absolute bottom-2.5 right-2.5 bg-ink/70 text-cream text-[11px] font-bold rounded-full px-2.5 py-1">1/1</span>
+          </div>
+          <div id="pmThumbs" class="grid grid-cols-3 gap-2 md:gap-3 mt-3"></div>
+        </div>
+        <div class="p-6 md:p-8 flex flex-col">
+          <p id="pmCat" class="text-[11px] uppercase tracking-[0.2em] text-olive font-bold"></p>
+          <h3 id="pmName" class="font-display font-bold text-2xl md:text-3xl mt-2 leading-tight"></h3>
+          <div class="flex items-center gap-3 mt-3">
+            <span id="pmPrice" class="text-xl font-extrabold"></span>
+            <span id="pmOld" class="hidden text-olive line-through text-sm"></span>
+            <span id="pmSale" class="hidden bg-clay text-cream text-[11px] font-bold rounded-full px-2.5 py-1"></span>
+          </div>
+          <p id="pmDesc" class="text-ink/70 text-sm leading-relaxed mt-4"></p>
+          <ul id="pmSpecs" class="mt-5 space-y-2 text-sm text-ink/70 border-t border-ink/10 pt-4"></ul>
+
+          <div class="mt-6">
+            <div class="flex justify-between items-center">
+              <p class="text-[11px] uppercase tracking-[0.2em] text-olive font-bold" data-i18n="sizeLabel">Размер (RU)</p>
+              <button id="pmSizeTableBtn" class="text-xs underline underline-offset-4 decoration-ink/30 hover:text-clay transition-colors" data-i18n="sizeTableBtn">Таблица размеров</button>
+            </div>
+            <div id="pmSizeTable" class="hidden mt-3 text-xs bg-sand rounded-xl p-3.5 leading-relaxed text-ink/70">
+              <span data-i18n="sizeTableText">Длина стельки: 39 — 25,0 см · 40 — 25,5 · 41 — 26,5 · 42 — 27,0 · 43 — 28,0 · 44 — 28,5 · 45 — 29,0. Если сомневаетесь между двумя — берите больший.</span>
+            </div>
+            <div id="pmSizes" class="grid grid-cols-4 md:grid-cols-7 gap-1.5 mt-3"></div>
+            <p id="pmSizeError" class="hidden text-clay text-xs mt-2 font-semibold"><span data-i18n="sizeError">Сначала выберите размер</span></p>
+          </div>
+
+          <button id="pmOrder" class="mt-7 w-full bg-ink text-cream rounded-full py-4 font-semibold hover:bg-clay transition-colors flex items-center justify-center gap-2">
+            <span data-i18n="orderBtn">Заказать</span> · <span id="pmOrderPrice"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Тосты -->
+<div id="toasts" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[80] flex flex-col items-center gap-2 w-full max-w-sm px-4 pointer-events-none"></div>
+
+<script>
+/* ============================================================
+   STEP style.tj — без корзины: каталог → карточка товара → заказ
+   ============================================================ */
+
+/* ↓↓↓ НАСТРОЙКИ — ПОМЕНЯЙ ПОД СЕБЯ ↓↓↓ */
+const WHATSAPP_NUMBER = '992172383030';  // код страны + номер, без +, пробелов и скобок
+const INSTAGRAM_USER  = 'step.styletj';  // юзернейм Instagram без @
+/* ↑↑↑ КОНЕЦ НАСТРОЕК ↑↑↑ */
+
+const CUR = 'смн';
+
+/* ============================================================
+   ЯЗЫКИ: тоҷикӣ / русский (по умолчанию — тоҷикӣ)
+   ============================================================ */
+const I18N = {
+  ru: {
+    navWrite: 'Написать',
+    catTitle: 'Каталог',
+    catTip: 'Нажми на товар, чтобы выбрать размер и заказать',
+    cat_all: 'Все', cat_sneakers: 'Кроссовки', cat_boots: 'Ботинки', cat_classic: 'Классика', cat_casual: 'Кэжуал', cat_outdoors: 'Аутдор',
+    orderBtn: 'Заказать',
+    sizeLabel: 'Размер (RU)',
+    sizeTableBtn: 'Таблица размеров',
+    sizeTableText: 'Длина стельки: 39 — 25,0 см · 40 — 25,5 · 41 — 26,5 · 42 — 27,0 · 43 — 28,0 · 44 — 28,5 · 45 — 29,0. Если сомневаетесь между двумя — берите больший.',
+    sizeError: 'Сначала выберите размер',
+    pmOrderTitle: 'Как отправить заказ?',
+    orderSubtext: 'Сообщение с товаром, размером и ценой подготовится автоматически — выбери мессенджер:',
+    waSub: 'Откроется чат с готовым заказом',
+    igSub: 'Откроется директ, текст скопируется',
+    contactsTitle: 'Контакты',
+    infoTitle: 'Инфо',
+    footerTagline: 'Магазин обуви. Новые поступления каждую неделю.',
+    addressText: 'Душанбе, Б. Корвон, д. 10, кв. 6 (подвал)',
+    deliveryText: 'Доставка по всей РТ',
+    copyright: 'STEP style.tj — все права защищены',
+    toastCopy: 'Фото и текст заказа скопированы — вставь в директ (Ctrl+V)',
+    toastSent: 'Заказ отправлен в {via}',
+    toastSize: 'Открой карточку товара — там есть таблица размеров',
+    orderNew: 'Новый заказ — STEP style.tj',
+    orderGoods: 'Товар:', orderInfo: 'Инфо:', orderArt: 'арт.', orderSizeLabel: 'размер', orderPrice: 'Цена:', orderPhoto: 'Фото:',
+    badgeNew: 'Новинка', badgeHit: 'Хит'
+  },
+  tj: {
+    navWrite: 'Нависед',
+    catTitle: 'Каталог',
+    catTip: 'Ба мол клик кунед, то андоза интихоб карда фармоиш диҳед',
+    cat_all: 'Ҳама', cat_sneakers: 'Кроссовкаҳо', cat_boots: 'Ботинкаҳо', cat_classic: 'Классикӣ', cat_casual: 'Ғайрирасмӣ', cat_outdoors: 'Аутдор',
+    orderBtn: 'Фармоиш диҳед',
+    sizeLabel: 'Андоза (RU)',
+    sizeTableBtn: 'Ҷадвали андоза',
+    sizeTableText: 'Дарозии таг: 39 — 25,0 см · 40 — 25,5 · 41 — 26,5 · 42 — 27,0 · 43 — 28,0 · 44 — 28,5 · 45 — 29,0. Агар байни ду андоза шубҳа доред — андозаи калонтарро гиред.',
+    sizeError: 'Аввал андозаро интихоб кунед',
+    pmOrderTitle: 'Фармоишро бо кадом барнома мефиристед?',
+    orderSubtext: 'Паём бо номи мол, андоза ва нарх худ ба худ омода мешавад — мессенҷерро интихоб кунед:',
+    waSub: 'Чати тайёр бо фармоиш кушода мешавад',
+    igSub: 'Директ кушода мешавад, матн нусхабардорӣ мешавад',
+    contactsTitle: 'Тамос',
+    infoTitle: 'Маълумот',
+    footerTagline: 'Мағозаи пойафзол. Ҳар ҳафта молҳои нав.',
+    addressText: 'Душанбе, кӯч. Корвон, х. 10, ошёнаи 6 (таҳхона)',
+    deliveryText: 'Дар тамоми Ҷумҳурии Тоҷикистон интиқол медиҳем',
+    copyright: 'STEP style.tj — ҳама ҳуқуқҳо ҳифз шудаанд',
+    toastCopy: 'Акс ва матни фармоиш нусхабардорӣ шуд — ба директ гузоред (Ctrl+V)',
+    toastSent: 'Фармоиш ба {via} фиристода шуд',
+    toastSize: 'Варақаи молро кушоед — ҷадвали андоза дар дохили он аст',
+    orderNew: 'Фармоиши нав — STEP style.tj',
+    orderGoods: 'Мол:', orderInfo: 'Маълумот:', orderArt: 'арт.', orderSizeLabel: 'андоза', orderPrice: 'Нарх:', orderPhoto: 'Акс:',
+    badgeNew: 'Нав', badgeHit: 'Хит'
+  }
+};
+
+let lang = (typeof localStorage !== 'undefined' && localStorage.getItem('step_lang')) || 'tj';
+if (!I18N[lang]) lang = 'tj';
+const t = (k) => (I18N[lang][k] != null ? I18N[lang][k] : I18N.ru[k]);
+
+const PRODUCTS = [
+  { id:1,  name:'Huntto Outdoor', cat:'sneakers', catName:'Кроссовки', catNameTJ:'Кроссовкаҳо', price:250,   oldPrice:null, badge:'new', sku:'STP-01', seed:'hunto-outdoor',
+    desc:'Спортивно-трекинговые кроссовки для прогулок и активного отдыха: амортизирующая подошва смягчает шаг, дышащий верх сохраняет комфорт в течение дня, а рельефная подошва подходит для троп, парков и неровных поверхностей.',
+    descTJ:'Кроссовкаи варзишӣ-сайёҳӣ барои сайругашт ва истироҳати фаъол: кафи амортизатсионӣ қадамро мулоим мегардонад, рӯйпӯши нафасгузар тамоми рӯз роҳатро нигоҳ медорад, кафи рельефӣ бошад барои пиёдагардҳо, боғҳо ва сатҳҳои ноҳамвор мувофиқ аст.',
+    specs:['Амортизирующая подошва — мягкий шаг','Дышащий материал верха','Рельефная подошва: тропы и парки','Прочный верх для активной носки','Универсальны: походы, спорт, повседневность'],
+    specsTJ:['Кафи амортизатсионӣ — қадами мулоим','Матои нафасгузари рӯйпӯш','Кафи рельефӣ: пиёдагардҳо ва боғҳо','Рӯйпӯши мустаҳкам барои пӯшидани фаъол','Универсалӣ: сайругашт, варзиш, рӯзмарра'],
+    sizes:[40,41,42,43,44] },
+  { id:2,  name:'Air Max Running', cat:'sneakers', catName:'Кроссовки', catNameTJ:'Кроссовкаҳо', price:300,   oldPrice:null, badge:null, sku:'STP-02', seed:'airmax-running',
+    desc:'Кроссовки с воздушной амортизацией: чёрный верх, белая подошва и воздушные вставки вдоль всей стопы. Лёгкие, дышащие — для города, тренировок и лёгкого бега.',
+    descTJ:'Кроссовкаи бо амортизатсияи ҳавоӣ: рӯйпӯши сиёҳ, кафи сафед ва қисмҳои ҳавоӣ дар тӯли тамоми пой. Сабук ва нафасгузар — барои шаҳр, машқ ва давидани сабук мувофиқанд.',
+    specs:['Амортизация Air Max — воздушные вставки','Дышащая сетчатая верхняя часть','Лёгкая конструкция','Мягкий язычок и высокая фиксация стопы','Цвет: чёрно-белый'],
+    specsTJ:['Амортизатсияи Air Max — қисмҳои ҳавоӣ','Қисми болоии тӯрдор ва нафасгузар','Сохти сабук','Забонаки мулоим ва мустаҳкамкунии баланди пой','Ранг: сиёҳу сафед'],
+    sizes:[30,31,32,33,34,35,36,37,38,39,40,41,42,43,44] },
+  { id:3,  name:'Running',         cat:'sneakers', catName:'Кроссовки', catNameTJ:'Кроссовкаҳо', price:220,   oldPrice:null, badge:null, sku:'STP-03', seed:'running-blue',
+    desc:'Лёгкие спортивные кроссовки для зала, города и повседневной носки: дышащий текстильный верх, мягкая амортизация и устойчивая рельефная подошва.',
+    descTJ:'Кроссовкаи сабуки варзишӣ барои зал, шаҳр ва пӯшидани рӯзмарра: рӯйпӯши матоии нафасгузар, амортизатсияи мулоим ва кафи рельефии устувор.',
+    specs:['Лёгкая конструкция — удобно весь день','Дышащий текстильный верх','Мягкая амортизирующая подошва','Рельефная подошва для устойчивости','Цвет: тёмно-синий с белой подошвой'],
+    specsTJ:['Сохти сабук — тамоми рӯз бароҳат','Рӯйпӯши матоии нафасгузар','Кафи амортизатсионии мулоим','Кафи рельефӣ барои устуворӣ','Ранг: кабуди торик бо каф сафед'],
+    sizes:[39,40,41,42,43,44] },
+  { id:4,  name:'Outdoor',         cat:'outdoors', catName:'Аутдор', catNameTJ:'Аутдор', price:260,   oldPrice:null, badge:'new', sku:'STP-04', seed:'outdoors',
+    desc:'Универсальные треккинговые кроссовки для города и бездорожья: плотный износостойкий верх, усиленные носок и пятка, амортизирующая подошва с глубоким протектором для уверенного сцепления на любой поверхности.',
+    descTJ:'Кроссовкаи универсалии треккингӣ барои шаҳр ва пойнок: рӯйпӯши зиччи устувор, ангуштпо ва пуштаи мустаҳкам, кафи амортизатсионӣ бо протектори чуқур барои доштани часпиш дар ҳама гуна сатҳ.',
+    specs:['Износостойкий верх — долго служит','Усиленные носок и пятка','Глубокий протектор для бездорожья','Амортизирующая подошва','Подходит для города и походов'],
+    specsTJ:['Рӯйпӯши устувор — хидмати дароз','Ангуштпо ва пуштаи мустаҳкам','Протектори чуқур барои пойнок','Кафи амортизатсионӣ','Мувофиқ барои шаҳр ва саёҳат'],
+    sizes:[39,40,41,42,43,44] },
+];
+
+let currentProduct = null, selectedSize = null;
+let modalOpen = false, orderOpen = false;
+let pmGallery = [], pmIdx = 0;
+
+const $ = (s) => document.querySelector(s);
+const fmt = (n) => n.toLocaleString('ru-RU') + ' ' + CUR;
+/*
+ * ФОТО ТОВАРОВ — ты присылаешь файлы, я прописываю их сюда по артикулу.
+ * Пока товару не назначено фото — автоматически показывается заглушка.
+ * Формат:  'STP-01': ['путь/фото1.jpg', 'путь/фото2.jpg', ...]
+ *           первый файл — главное фото; остальные появятся в карточке товара.
+ */
+const PHOTOS = {
+  'STP-01': [
+    'uploads/obuv/photo_0_HUNTO(BLACK).jpg',
+    'uploads/obuv/photo_0_HUNTO(black+white).jpg',
+    'uploads/obuv/photo_0_HUNTO(white).jpg',
+    'uploads/obuv/photo_0_HUNTO(seriy+white).jpg',
+    'uploads/obuv/photo_0_HUNTU(blue+black).jpg'
+  ],
+  'STP-02': [
+    'uploads/obuv/photo_1_AIRMAX(black).jpg',
+    'uploads/obuv/photo_1_AIRMAX(white).jpg',
+    'uploads/obuv/photo_1_AIRMAX(white100%).jpg',
+    'uploads/obuv/photo_1_AIRMAX(green).jpg'
+  ],
+  'STP-03': [
+    'uploads/obuv/photo_2_RUNNING(blue+white).jpg',
+    'uploads/obuv/photo_2_RUNNING(black+whitee).jpg',
+    'uploads/obuv/photo_2_RUNNING(black+black).jpg',
+    'uploads/obuv/photo_2_RUNNING(black+blue).jpg'
+  ],
+  'STP-04': [
+    'uploads/obuv/photo_4_OUTDOORS(BLACK).jpg',
+    'uploads/obuv/photo_4_OUTDOORS(BLack+white).jpg',
+    'uploads/obuv/photo_4_OUTDOORS(White).jpg',
+    'uploads/obuv/photo_4_OUTDOORS(green).jpg',
+    'uploads/obuv/photo_4_OUTDOORS.jpg'
+  ]
+};
+
+const picsum  = (seed, w, h) => `https://picsum.photos/seed/${seed}/${w}/${h}.jpg`;
+const shots   = (sku) => PHOTOS[sku] || [];
+const photoUrl = (sku, seed, w, h) => shots(sku)[0] || picsum(seed, w, h);
+const productById = (id) => PRODUCTS.find(p => p.id === id);
+const icons = () => {};
+function lockScroll() { document.body.style.overflow = (modalOpen || orderOpen) ? 'hidden' : ''; }
+
+// ---------- Каталог ----------
+function badgesHTML(p) {
+  const arr = [];
+  if (p.badge === 'new') arr.push([t('badgeNew'), 'bg-ink text-cream']);
+  if (p.badge === 'hit') arr.push([t('badgeHit'), 'bg-clay text-cream']);
+  if (p.oldPrice) arr.push([`−${Math.round((1 - p.price / p.oldPrice) * 100)}%`, 'bg-cream text-ink']);
+  if (!arr.length) return '';
+  return `<div class="absolute top-2 left-2 md:top-3 md:left-3 z-10 flex flex-col items-start gap-1.5">${
+    arr.map(([t, c]) => `<span class="${c} text-[9px] md:text-[11px] font-bold uppercase tracking-wider px-2 md:px-2.5 py-0.5 md:py-1 rounded-full">${t}</span>`).join('')
+  }</div>`;
+}
+
+function cardHTML(p, i) {
+  return `
+  <article class="product-card reveal-item group cursor-pointer bg-white rounded-2xl md:rounded-3xl border border-ink/10 overflow-hidden transition-all duration-300 hover:shadow-[0_16px_40px_-16px_rgba(27,22,17,0.3)] hover:-translate-y-1" data-id="${p.id}" style="transition-delay:${(i % 8) * 40}ms">
+    <div class="relative overflow-hidden aspect-square bg-sand">
+      <img src="${photoUrl(p.sku, p.seed, 600, 800)}" alt="${p.name}" loading="lazy"
+           onerror="this.onerror=null;this.src='${picsum(p.seed, 600, 800)}'"
+           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+      ${badgesHTML(p)}
+    </div>
+    <div class="p-3 md:p-5">
+      <p class="text-[9px] md:text-[11px] uppercase tracking-[0.15em] text-olive font-bold">${lang === 'tj' ? (p.catNameTJ || p.catName) : p.catName}</p>
+      <h3 class="font-semibold text-sm md:text-base mt-1 leading-tight truncate">${p.name}</h3>
+      <div class="mt-1 md:mt-2 flex items-baseline gap-2 flex-wrap">
+        <span class="font-extrabold text-sm md:text-lg">${fmt(p.price)}</span>
+        ${p.oldPrice ? `<span class="text-[11px] md:text-xs text-olive line-through">${fmt(p.oldPrice)}</span>` : ''}
+      </div>
+      <button class="mt-2.5 md:mt-4 w-full bg-ink text-cream rounded-full md:rounded-xl py-2 md:py-2.5 text-[11px] md:text-sm font-semibold flex items-center justify-center gap-1.5 hover:bg-clay transition-colors">
+        <svg class="w-3.5 h-3.5" aria-hidden="true"><use href="#cart"/></svg> ${t('orderBtn')}
+      </button>
+    </div>
+  </article>`;
+}
+
+function plural(n, one, few, many) {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
+  return many;
+}
+
+let activeCat = 'all';
+function renderCatalog() {
+  if (activeCat !== 'all' && !PRODUCTS.some(p => p.cat === activeCat)) activeCat = 'all';
+  const list = activeCat === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.cat === activeCat);
+  document.querySelectorAll('.cat-btn').forEach(b => {
+    const cat = b.dataset.cat;
+    const n = cat === 'all' ? PRODUCTS.length : PRODUCTS.filter(p => p.cat === cat).length;
+    b.classList.toggle('hidden', n === 0);
+  });
+  $('#catCount').textContent = list.length;
+  $('#catSuffix').textContent = activeCat === 'all'
+    ? (lang === 'ru'
+        ? plural(list.length, 'товар в наличии', 'товара в наличии', 'товаров в наличии')
+        : 'мол дар фурӯш')
+    : (lang === 'ru'
+        ? `из ${PRODUCTS.length} в каталоге`
+        : `аз ${PRODUCTS.length} дар каталог`);
+  $('#productGrid').innerHTML = list.map(cardHTML).join('');
+  icons();
+  observeReveals();
+}
+
+function applyLang() {
+  document.documentElement.lang = lang === 'ru' ? 'ru' : 'tg';
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    const on = b.dataset.lang === lang;
+    b.classList.toggle('bg-ink', on);
+    b.classList.toggle('text-cream', on);
+    b.classList.toggle('text-ink/60', !on);
+  });
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  renderCatalog();
+  if (currentProduct) fillProduct(currentProduct);
+}
+
+// ---------- Модалка товара ----------
+function openProduct(id) {
+  currentProduct = productById(id);
+  if (!currentProduct) return;
+  selectedSize = null;
+  fillProduct(currentProduct);
+  modalOpen = true; lockScroll();
+  const modal = $('#productModal'), panel = $('#pmodalPanel'), overlay = $('#pmodalOverlay');
+  modal.classList.remove('hidden');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    panel.classList.add('opened');
+    overlay.classList.remove('opacity-0'); overlay.classList.add('opacity-100');
+  }));
+}
+
+function fillProduct(p) {
+  const sku = p.sku, seed = p.seed;
+  const pics = shots(sku);
+  pmGallery = [];
+  if (pics.length) pmGallery = pics.map(n => ({ t: n, m: n }));
+  else pmGallery = [seed, seed + '-b', seed + '-c'].map(s => ({ t: picsum(s, 300, 300), m: picsum(s, 800, 1000) }));
+  pmIdx = 0;
+
+  $('#pmThumbs').innerHTML = pmGallery.map((g, k) => `
+    <button class="thumb rounded-xl overflow-hidden aspect-square bg-sand transition-all ${k === 0 ? 'ring-2 ring-ink' : 'opacity-70 hover:opacity-100'}" data-i="${k}">
+      <img src="${g.t}" alt="Фото ${k + 1}" class="w-full h-full object-cover" loading="lazy"
+           onerror="this.onerror=null;this.parentElement.style.display='none'">
+    </button>`).join('');
+  showPhoto(0, true);
+
+  $('#pmCat').textContent = lang === 'tj' ? (p.catNameTJ || p.catName) : p.catName;
+  $('#pmName').textContent = p.name;
+  $('#pmPrice').textContent = fmt(p.price);
+  $('#pmDesc').textContent = lang === 'tj' ? (p.descTJ || p.desc) : p.desc;
+  $('#pmOrderPrice').textContent = fmt(p.price);
+
+  const old = $('#pmOld'), sale = $('#pmSale');
+  if (p.oldPrice) {
+    old.textContent = fmt(p.oldPrice);
+    old.classList.remove('hidden');
+    sale.textContent = `−${Math.round((1 - p.price / p.oldPrice) * 100)}%`;
+    sale.classList.remove('hidden');
+  } else { old.classList.add('hidden'); sale.classList.add('hidden'); }
+
+  $('#pmSpecs').innerHTML = (lang === 'tj' ? (p.specsTJ || p.specs) : p.specs)
+    .map(s => `<li class="flex items-start gap-2.5"><svg class="w-4 h-4 text-clay shrink-0 mt-0.5" aria-hidden="true"><use href="#check"/></svg>${s}</li>`).join('');
+
+  $('#pmSizes').innerHTML = p.sizes.map(s =>
+    `<button data-size="${s}" class="size-btn border border-ink/20 rounded-xl py-2.5 text-sm font-semibold hover:border-ink transition-colors">${s}</button>`
+  ).join('');
+  if (selectedSize) document.querySelectorAll('#pmSizes .size-btn').forEach(x => {
+    if (x.dataset.size === selectedSize) x.classList.add('bg-ink', 'text-cream', 'border-ink');
+  });
+  $('#pmSizeError').classList.add('hidden');
+  $('#pmSizeTable').classList.add('hidden');
+}
+
+function showPhoto(i, skipFade) {
+  if (!pmGallery.length) return;
+  pmIdx = (i + pmGallery.length) % pmGallery.length;
+  const g = pmGallery[pmIdx];
+  const im = $('#pmImg');
+  im.onerror = null;
+  im.alt = currentProduct ? currentProduct.name : '';
+  im.onload = null;
+  if (skipFade) {
+    im.src = g.m;
+    im.onerror = () => { im.onerror = null; im.src = g.t; };
+  } else {
+    im.classList.add('opacity-0');
+    setTimeout(() => {
+      im.src = g.m;
+      im.onerror = () => { im.onerror = null; im.src = g.t; im.classList.remove('opacity-0'); };
+      im.onload = () => im.classList.remove('opacity-0');
+    }, 200);
+  }
+  $('#pmCounter').textContent = `${pmIdx + 1}/${pmGallery.length}`;
+  document.querySelectorAll('#pmThumbs .thumb').forEach((x, k) => {
+    const on = k === pmIdx;
+    x.classList.toggle('ring-2', on);
+    x.classList.toggle('ring-ink', on);
+    x.classList.toggle('opacity-70', !on);
+  });
+}
+
+function closeProduct() {
+  const modal = $('#productModal'), panel = $('#pmodalPanel'), overlay = $('#pmodalOverlay');
+  panel.classList.remove('opened');
+  overlay.classList.remove('opacity-100'); overlay.classList.add('opacity-0');
+  setTimeout(() => modal.classList.add('hidden'), 500);
+  modalOpen = false; lockScroll();
+}
+
+/* ============================================================
+   ЗАКАЗ ОДНОГО ТОВАРА: WhatsApp / Instagram
+   ============================================================ */
+
+function buildOrderText(p, size) {
+  const catName = lang === 'tj' ? (p.catNameTJ || p.catName) : p.catName;
+  let text = t('orderNew') + '\n\n';
+  text += `${t('orderGoods')} ${p.name}\n`;
+  text += `${t('orderInfo')} ${catName}, ${t('orderArt')} ${p.sku}, ${t('orderSizeLabel')} ${size}\n`;
+  text += `${t('orderPrice')} ${fmt(p.price)}\n`;
+  text += `${t('orderPhoto')} ${photoUrl(p.sku, p.seed, 800, 1000)}`;
+  return text;
+}
+
+function openOrderModal() {
+  if (!currentProduct) return;
+  if (!selectedSize) {
+    const err = $('#pmSizeError');
+    err.classList.remove('hidden', 'shake'); void err.offsetWidth; err.classList.add('shake');
+    return;
+  }
+  closeProduct();
+  orderOpen = true; lockScroll();
+  const modal = $('#orderModal'), panel = $('#orderPanel'), overlay = $('#orderOverlay');
+  modal.classList.remove('hidden');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    panel.classList.add('opened');
+    overlay.classList.remove('opacity-0'); overlay.classList.add('opacity-100');
+  }));
+}
+function closeOrderModal() {
+  const modal = $('#orderModal'), panel = $('#orderPanel'), overlay = $('#orderOverlay');
+  panel.classList.remove('opened');
+  overlay.classList.remove('opacity-100'); overlay.classList.add('opacity-0');
+  setTimeout(() => modal.classList.add('hidden'), 500);
+  orderOpen = false; lockScroll();
+}
+
+function sendViaWhatsApp() {
+  const text = buildOrderText(currentProduct, selectedSize);
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
+  finishOrder('WhatsApp');
+}
+
+function loadImg(url) {
+  return new Promise((res, rej) => {
+    const im = new Image();
+    im.crossOrigin = 'anonymous';
+    im.referrerPolicy = 'no-referrer';
+    im.onload = () => res(im);
+    im.onerror = () => rej(new Error('image load'));
+    im.src = url;
+  });
+}
+
+function wrapLines(ctx, text, maxWidth, font) {
+  ctx.font = font;
+  const out = [];
+  for (const raw of text.split('\n')) {
+    const words = raw.split(' ');
+    let line = '';
+    for (const w of words) {
+      const test = line ? line + ' ' + w : w;
+      if (line && ctx.measureText(test).width > maxWidth) { out.push(line); line = w; }
+      else line = test;
+    }
+    out.push(line);
+  }
+  return out;
+}
+
+async function copyOrderCard(p, orderText) {
+  const url = photoUrl(p.sku, p.seed, 1080, 1350);
+  const im = await loadImg(url);
+  const W = 1080;
+  const gap = 60;
+  const Himg = Math.round(W * im.naturalHeight / im.naturalWidth);
+  const cardText = orderText.split('\n').filter(l => !l.startsWith(t('orderPhoto'))).join('\n');
+
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const padX = 56, padY = 48;
+  const blockW = W - padX * 2;
+  const titleFont = '700 46px Unbounded, sans-serif';
+  const bodyFont = '600 40px Manrope, sans-serif';
+  ctx.font = titleFont;
+  const titleLines = wrapLines(ctx, t('orderNew'), blockW, titleFont);
+  const bodyLines = wrapLines(ctx, cardText, blockW, bodyFont);
+  const lineH = 58;
+  const blockH = padY * 2 + titleLines.length * lineH + 26 + bodyLines.length * lineH;
+  canvas.width = W;
+  canvas.height = Himg + gap + blockH;
+  ctx.fillStyle = '#1B1611';
+  ctx.fillRect(0, 0, W, canvas.height);
+  ctx.drawImage(im, 0, 0, W, Himg);
+  ctx.fillStyle = '#F3EFE6';
+  ctx.font = titleFont;
+  let y = Himg + gap + padY;
+  for (const l of titleLines) { ctx.fillText(l, padX, y); y += lineH; }
+  y += 26;
+  ctx.font = bodyFont;
+  for (const l of bodyLines) { ctx.fillText(l, padX, y); y += lineH; }
+  const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+  if (!blob) throw new Error('no blob');
+  await navigator.clipboard.write(new ClipboardItem({ 'image/png': blob }));
+  return true;
+}
+
+async function copyOrderText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      return ok;
+    } catch (_) { return false; }
+  }
+}
+
+async function sendViaInstagram() {
+  const text = buildOrderText(currentProduct, selectedSize);
+  let copied = false;
+  try {
+    copied = await copyOrderCard(currentProduct, text);
+  } catch (e) {
+    copied = await copyOrderText(text);
+  }
+  window.open(`https://ig.me/m/${INSTAGRAM_USER}`, '_blank');
+  finishOrder('Instagram', copied);
+}
+
+function finishOrder(via, copied = false) {
+  closeOrderModal();
+  if (via === 'Instagram' && copied) {
+    toast(t('toastCopy'), 'clipboard-check');
+  } else {
+    toast(t('toastSent').replace('{via}', via), 'check');
+  }
+}
+
+// ---------- Тосты ----------
+function toast(msg, icon = 'check') {
+  const el = document.createElement('div');
+  el.className = 'toast pointer-events-auto flex items-center gap-2.5 bg-ink text-cream rounded-full pl-4 pr-6 py-3 text-sm font-semibold shadow-xl';
+  el.innerHTML = `<svg class="w-4 h-4 text-clay shrink-0" aria-hidden="true"><use href="#${icon}"/></svg><span>${msg}</span>`;
+  $('#toasts').appendChild(el);
+  icons();
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+  setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 450); }, 3400);
+}
+
+// ---------- Появление при скролле ----------
+const hasIO = typeof IntersectionObserver !== 'undefined';
+const io = hasIO ? new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); } });
+}, { threshold: 0.08 }) : null;
+function observeReveals() {
+  if (!io) { document.querySelectorAll('.reveal-item').forEach(el => el.classList.add('in-view')); return; }
+  document.querySelectorAll('.reveal-item:not(.in-view)').forEach(el => io.observe(el));
+}
+
+/* ============================================================
+   События
+   ============================================================ */
+
+$('#productGrid').addEventListener('click', (e) => {
+  const card = e.target.closest('[data-id]');
+  if (card) openProduct(+card.dataset.id);
+});
+
+$('#catFilters').addEventListener('click', (e) => {
+  const b = e.target.closest('.cat-btn');
+  if (!b || b.dataset.cat === activeCat) return;
+  activeCat = b.dataset.cat;
+  document.querySelectorAll('.cat-btn').forEach(x => {
+    x.classList.remove('bg-ink', 'text-cream', 'border-ink');
+    x.classList.add('bg-white', 'text-ink/60', 'border-ink/15', 'hover:text-ink', 'hover:border-ink');
+  });
+  b.classList.add('bg-ink', 'text-cream', 'border-ink');
+  b.classList.remove('bg-white', 'text-ink/60', 'border-ink/15', 'hover:text-ink', 'hover:border-ink');
+  renderCatalog();
+});
+
+$('#pmThumbs').addEventListener('click', (e) => {
+  const t = e.target.closest('.thumb');
+  if (!t) return;
+  showPhoto(+t.dataset.i);
+});
+
+$('#pmPrev').addEventListener('click', (e) => { e.stopPropagation(); showPhoto(pmIdx - 1); });
+$('#pmNext').addEventListener('click', (e) => { e.stopPropagation(); showPhoto(pmIdx + 1); });
+
+$('#pmSizes').addEventListener('click', (e) => {
+  const b = e.target.closest('.size-btn');
+  if (!b) return;
+  selectedSize = b.dataset.size;
+  document.querySelectorAll('#pmSizes .size-btn').forEach(x => x.classList.remove('bg-ink', 'text-cream', 'border-ink'));
+  b.classList.add('bg-ink', 'text-cream', 'border-ink');
+  $('#pmSizeError').classList.add('hidden');
+});
+
+$('#pmOrder').addEventListener('click', openOrderModal);
+$('#pmSizeTableBtn').addEventListener('click', () => $('#pmSizeTable').classList.toggle('hidden'));
+$('#footerSizeTableBtn').addEventListener('click', () => {
+  toast(t('toastSize'), 'ruler');
+});
+$('#pmodalClose').addEventListener('click', closeProduct);
+$('#pmodalOverlay').addEventListener('click', closeProduct);
+
+$('#sendWaBtn').addEventListener('click', sendViaWhatsApp);
+$('#sendIgBtn').addEventListener('click', sendViaInstagram);
+$('#orderCloseBtn').addEventListener('click', closeOrderModal);
+$('#orderOverlay').addEventListener('click', closeOrderModal);
+
+$('#langSwitch').addEventListener('click', (e) => {
+  const b = e.target.closest('.lang-btn');
+  if (!b || b.dataset.lang === lang) return;
+  lang = b.dataset.lang;
+  if (typeof localStorage !== 'undefined') localStorage.setItem('step_lang', lang);
+  applyLang();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (orderOpen) closeOrderModal();
+  else if (modalOpen) closeProduct();
+});
+
+window.addEventListener('scroll', () => {
+  $('#siteHeader').classList.toggle('shadow-md', window.scrollY > 10);
+}, { passive: true });
+
+/* ============================================================
+   Инициализация
+   ============================================================ */
+applyLang();
+renderCatalog();
+icons();
+$('#year').textContent = new Date().getFullYear();
+
+$('#footerWa').href = `https://wa.me/${WHATSAPP_NUMBER}`;
+$('#footerIg').href = `https://ig.me/m/${INSTAGRAM_USER}`;
+$('#headerWa').href = `https://wa.me/${WHATSAPP_NUMBER}`;
+$('#headerIg').href = `https://www.instagram.com/${INSTAGRAM_USER}/`;
+</script>
+</body>
+</html>
