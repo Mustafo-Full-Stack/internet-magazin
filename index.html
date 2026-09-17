@@ -19,13 +19,11 @@
     theme: {
       extend: {
         colors: {
-          cream: 'var(--cream)',
-          ink:   'var(--ink)',
-          clay:  'var(--clay)',
-          sand:  'var(--sand)',
-          olive: 'var(--olive)',
-          inv:   'var(--inv)',
-          invC:  'var(--invC)'
+          cream: '#F3EFE6',
+          ink:   '#1B1611',
+          clay:  '#D9541E',
+          sand:  '#E7E0D2',
+          olive: '#7A7263'
         },
         fontFamily: {
           display: ['Unbounded', 'sans-serif'],
@@ -43,35 +41,15 @@
 
 
 <style>
-:root {
-  color-scheme: light;
-  --cream: #F3EFE6;
-  --ink:   #1B1611;
-  --clay:  #D9541E;
-  --sand:  #E7E0D2;
-  --olive: #7A7263;
-  --inv:   #1B1611;
-  --invC:  #F3EFE6;
-}
-html.dark {
-  color-scheme: dark;
-  --cream: #17130F;
-  --ink:   #EDE5D8;
-  --clay:  #E3662F;
-  --sand:  #251F17;
-  --olive: #A89E8C;
-  --inv:   #0D0A07;
-  --invC:  #EDE5D8;
-}
-html { -webkit-text-size-adjust:100%; }
-body { -webkit-tap-highlight-color: transparent; overflow-x:hidden; }
-::selection { background:var(--clay); color:var(--cream); }
-body, header, .pmodal-panel, #productGrid .product-card, #searchInput { transition:background-color .3s ease, color .3s ease, border-color .3s ease; }
+  :root { color-scheme: light; }
+  html { -webkit-text-size-adjust:100%; }
+  body { -webkit-tap-highlight-color: transparent; overflow-x:hidden; }
+  ::selection { background:#D9541E; color:#F3EFE6; }
 
-::-webkit-scrollbar { width:10px; height:10px; }
-::-webkit-scrollbar-track { background:var(--cream); }
-::-webkit-scrollbar-thumb { background:#c9c2b2; border-radius:99px; border:3px solid var(--cream); }
-::-webkit-scrollbar-thumb:hover { background:var(--olive); }
+  ::-webkit-scrollbar { width:10px; height:10px; }
+  ::-webkit-scrollbar-track { background:#F3EFE6; }
+  ::-webkit-scrollbar-thumb { background:#c9c2b2; border-radius:99px; border:3px solid #F3EFE6; }
+  ::-webkit-scrollbar-thumb:hover { background:#7A7263; }
 
   .reveal-item { opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s cubic-bezier(.22,1,.36,1); }
   .reveal-item.in-view { opacity:1; transform:none; }
@@ -97,8 +75,6 @@ body, header, .pmodal-panel, #productGrid .product-card, #searchInput { transiti
   <symbol id="phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.11 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
   <symbol id="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></symbol>
   <symbol id="search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></symbol>
-  <symbol id="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
-  <symbol id="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
   <symbol id="send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></symbol>
   <symbol id="arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
   <symbol id="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
@@ -127,14 +103,10 @@ body, header, .pmodal-panel, #productGrid .product-card, #searchInput { transiti
         <svg class="w-4 h-4" aria-hidden="true"><use href="#phone"/></svg> +992 17 238-30-30
       </a>
       <div id="langSwitch" class="flex items-center rounded-full border border-ink/15 overflow-hidden text-xs font-bold select-none" role="group" aria-label="Язык">
-        <button class="lang-btn px-2.5 py-2 bg-inv text-invC" data-lang="tj" aria-label="Тоҷикӣ">ТҶ</button>
+        <button class="lang-btn px-2.5 py-2 bg-ink text-cream" data-lang="tj" aria-label="Тоҷикӣ">ТҶ</button>
         <button class="lang-btn px-2.5 py-2 text-ink/60" data-lang="ru" aria-label="Русский">RU</button>
       </div>
-      <button id="themeToggle" class="w-11 h-11 grid place-items-center rounded-full border border-ink/15 bg-sand text-ink/60 hover:text-ink hover:border-ink transition-colors" aria-label="Тёмная тема" title="Тема">
-        <svg id="iconSun" class="w-5 h-5 hidden" aria-hidden="true"><use href="#sun"/></svg>
-        <svg id="iconMoon" class="w-5 h-5" aria-hidden="true"><use href="#moon"/></svg>
-      </button>
-      <a id="headerWa" href="#" target="_blank" rel="noopener" class="flex items-center gap-2 bg-inv text-invC rounded-full px-4 md:px-5 h-11 text-xs md:text-sm font-semibold hover:bg-clay transition-colors">
+      <a id="headerWa" href="#" target="_blank" rel="noopener" class="flex items-center gap-2 bg-ink text-cream rounded-full px-4 md:px-5 h-11 text-xs md:text-sm font-semibold hover:bg-clay transition-colors">
         <svg class="w-4 h-4" aria-hidden="true"><use href="#wa"/></svg> <span class="hidden sm:inline" data-i18n="navWrite">Написать</span>
       </a>
     </div>
@@ -156,7 +128,7 @@ body, header, .pmodal-panel, #productGrid .product-card, #searchInput { transiti
       <div class="relative">
         <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-olive" aria-hidden="true"><use href="#search"/></svg>
         <input id="searchInput" type="search" data-i18n-ph="searchPlaceholder" placeholder="Найти обувь…"
-               class="w-full bg-sand border border-ink/15 rounded-full pl-10 pr-4 py-2.5 text-sm placeholder:text-olive focus:outline-none focus:border-ink transition-colors">
+               class="w-full bg-white border border-ink/15 rounded-full pl-10 pr-4 py-2.5 text-sm placeholder:text-olive focus:outline-none focus:border-ink transition-colors">
       </div>
     </div>
 
@@ -165,13 +137,13 @@ body, header, .pmodal-panel, #productGrid .product-card, #searchInput { transiti
 </main>
 
 <!-- ========================= ФУТЕР ========================= -->
-<footer class="bg-inv text-invC mt-4">
+<footer class="bg-ink text-cream mt-4">
   <div class="max-w-[1280px] mx-auto px-4 md:px-8 py-10 md:py-14 flex flex-col md:flex-row md:items-start justify-between gap-8">
     <div>
 <div class="flex items-center">
           <img src="uploads/logo/Step_Style_ultra.png" alt="STEP style.tj" class="h-14 w-auto">
         </div>
-      <p class="mt-4 text-sm text-invC/55 max-w-xs" data-i18n="footerTagline">Магазин обуви. Новые поступления каждую неделю.</p>
+      <p class="mt-4 text-sm text-cream/55 max-w-xs" data-i18n="footerTagline">Магазин обуви. Новые поступления каждую неделю.</p>
       <div class="mt-5 flex gap-2.5">
         <a id="footerWa" href="#" target="_blank" rel="noopener" class="flex items-center gap-2 bg-cream/10 hover:bg-cream/20 rounded-full px-4 py-2.5 text-xs font-semibold transition-colors">
           <svg class="w-4 h-4 text-clay" aria-hidden="true"><use href="#wa"/></svg> WhatsApp
@@ -183,31 +155,31 @@ body, header, .pmodal-panel, #productGrid .product-card, #searchInput { transiti
     </div>
     <div class="flex flex-wrap gap-x-12 gap-y-8 md:gap-x-20 text-sm">
       <div>
-        <p class="text-[11px] uppercase tracking-[0.2em] text-invC/40 font-bold mb-3" data-i18n="contactsTitle">Контакты</p>
+        <p class="text-[11px] uppercase tracking-[0.2em] text-cream/40 font-bold mb-3" data-i18n="contactsTitle">Контакты</p>
         <ul class="space-y-2.5">
-          <li><a href="tel:+992172383030" class="text-invC/75 hover:text-clay transition-colors">+992 17 238-30-30</a></li>
-          <li><a href="mailto:info@style.tj" class="text-invC/75 hover:text-clay transition-colors">info@style.tj</a></li>
-          <li class="text-invC/55" data-i18n="addressText">Душанбе, Б. Корвон, д. 10, кв. 6 (подвал)</li>
-          <li class="text-invC/55" data-i18n="deliveryText">Доставка по всей РТ</li>
+          <li><a href="tel:+992172383030" class="text-cream/75 hover:text-clay transition-colors">+992 17 238-30-30</a></li>
+          <li><a href="mailto:info@style.tj" class="text-cream/75 hover:text-clay transition-colors">info@style.tj</a></li>
+          <li class="text-cream/55" data-i18n="addressText">г. Душанбе, р. Фирдавси — рынок «Корвон», 10-е ворота, 6-й ряд</li>
+          <li class="text-cream/55" data-i18n="deliveryText">Доставляем по всей Республике Таджикистан</li>
         </ul>
       </div>
       <div>
-        <p class="text-[11px] uppercase tracking-[0.2em] text-invC/40 font-bold mb-3" data-i18n="infoTitle">Инфо</p>
+        <p class="text-[11px] uppercase tracking-[0.2em] text-cream/40 font-bold mb-3" data-i18n="infoTitle">Инфо</p>
         <ul class="space-y-2.5">
-          <li><button id="footerSizeTableBtn" class="text-invC/75 hover:text-clay transition-colors text-left" data-i18n="sizeTableBtn">Таблица размеров</button></li>
+          <li><button id="footerSizeTableBtn" class="text-cream/75 hover:text-clay transition-colors text-left" data-i18n="sizeTableBtn">Таблица размеров</button></li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="border-t border-invC/10 py-4 text-center text-[11px] text-invC/40">© <span id="year"></span> <span data-i18n="copyright">STEP style.tj — все права защищены</span></div>
+  <div class="border-t border-cream/10 py-4 text-center text-[11px] text-cream/40">© <span id="year"></span> <span data-i18n="copyright">STEP style.tj — все права защищены</span></div>
 </footer>
 
 <!-- ========================= ВЫБОР: WHATSAPP / INSTAGRAM ========================= -->
 <div id="orderModal" class="fixed inset-0 z-[75] hidden">
-  <div id="orderOverlay" class="absolute inset-0 bg-inv/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-500"></div>
+  <div id="orderOverlay" class="absolute inset-0 bg-ink/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-500"></div>
   <div class="absolute inset-0 flex items-end md:items-center justify-center md:p-6 pointer-events-none">
     <div id="orderPanel" class="pmodal-panel pointer-events-auto relative w-full md:max-w-md bg-cream rounded-t-[1.75rem] md:rounded-[1.75rem] pt-6 px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:p-8 shadow-2xl">
-      <button id="orderCloseBtn" class="absolute top-4 right-4 w-10 h-10 rounded-full border border-ink/10 grid place-items-center hover:bg-inv hover:text-invC transition-colors" aria-label="Закрыть">
+      <button id="orderCloseBtn" class="absolute top-4 right-4 w-10 h-10 rounded-full border border-ink/10 grid place-items-center hover:bg-ink hover:text-cream transition-colors" aria-label="Закрыть">
         <svg class="w-[18px] h-[18px]" aria-hidden="true"><use href="#x"/></svg>
       </button>
 
@@ -218,7 +190,7 @@ body, header, .pmodal-panel, #productGrid .product-card, #searchInput { transiti
       <p id="orderSubtext" class="text-ink/60 text-sm mt-2" data-i18n="orderSubtext">Сообщение с товаром, размером и ценой подготовится автоматически — откроется чат WhatsApp:</p>
 
       <div class="mt-6 space-y-3">
-        <button id="sendWaBtn" class="group w-full flex items-center gap-4 rounded-2xl border border-ink/10 bg-sand p-4 text-left hover:border-[#25D366] hover:shadow-md transition-all">
+        <button id="sendWaBtn" class="group w-full flex items-center gap-4 rounded-2xl border border-ink/10 bg-white p-4 text-left hover:border-[#25D366] hover:shadow-md transition-all">
           <span class="w-12 h-12 rounded-xl bg-[#25D366]/10 text-[#1DA851] grid place-items-center shrink-0 transition-transform group-hover:scale-110">
             <svg class="w-6 h-6" aria-hidden="true"><use href="#wa"/></svg>
           </span>
@@ -229,7 +201,7 @@ body, header, .pmodal-panel, #productGrid .product-card, #searchInput { transiti
           <svg class="w-5 h-5 text-olive group-hover:text-[#1DA851] group-hover:translate-x-1 transition-all" aria-hidden="true"><use href="#arrow-right"/></svg>
         </button>
         <!-- Instagram-вариант заказа отключён. Вернуть при необходимости:
-        <button id="sendIgBtn" class="group w-full flex items-center gap-4 rounded-2xl border border-ink/10 bg-sand p-4 text-left hover:border-clay hover:shadow-md transition-all">
+        <button id="sendIgBtn" class="group w-full flex items-center gap-4 rounded-2xl border border-ink/10 bg-white p-4 text-left hover:border-clay hover:shadow-md transition-all">
           <span class="w-12 h-12 rounded-xl bg-clay/10 text-clay grid place-items-center shrink-0 transition-transform group-hover:scale-110">
             <svg class="w-6 h-6" aria-hidden="true"><use href="#ig"/></svg>
           </span>
@@ -247,23 +219,23 @@ body, header, .pmodal-panel, #productGrid .product-card, #searchInput { transiti
 
 <!-- ========================= МОДАЛКА ТОВАРА ========================= -->
 <div id="productModal" class="fixed inset-0 z-[70] hidden">
-  <div id="pmodalOverlay" class="absolute inset-0 bg-inv/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-500"></div>
+  <div id="pmodalOverlay" class="absolute inset-0 bg-ink/60 backdrop-blur-[2px] opacity-0 transition-opacity duration-500"></div>
   <div class="absolute inset-0 flex items-end md:items-center justify-center md:p-6 pointer-events-none">
     <div id="pmodalPanel" class="pmodal-panel pointer-events-auto relative w-full md:max-w-4xl max-h-[92vh] md:max-h-[86vh] overflow-y-auto bg-cream rounded-t-[1.75rem] md:rounded-[1.75rem] shadow-2xl">
-      <button id="pmodalClose" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-cream/90 border border-ink/10 grid place-items-center hover:bg-inv hover:text-invC transition-colors" aria-label="Закрыть">
+      <button id="pmodalClose" class="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-cream/90 border border-ink/10 grid place-items-center hover:bg-ink hover:text-cream transition-colors" aria-label="Закрыть">
         <svg class="w-[18px] h-[18px]" aria-hidden="true"><use href="#x"/></svg>
       </button>
       <div class="grid md:grid-cols-2">
         <div class="bg-sand p-4 md:p-6">
-          <div class="relative rounded-2xl overflow-hidden aspect-square bg-sand">
+          <div class="relative rounded-2xl overflow-hidden aspect-square bg-white">
             <img id="pmImg" src="" alt="" class="w-full h-full object-cover transition-opacity duration-300">
-            <button id="pmPrev" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-cream/90 border border-ink/10 grid place-items-center hover:bg-inv hover:text-invC transition-colors shadow-sm" aria-label="Назад">
+            <button id="pmPrev" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-cream/90 border border-ink/10 grid place-items-center hover:bg-ink hover:text-cream transition-colors shadow-sm" aria-label="Назад">
               <svg class="w-4 h-4 rotate-180" aria-hidden="true"><use href="#arrow-right"/></svg>
             </button>
-            <button id="pmNext" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-cream/90 border border-ink/10 grid place-items-center hover:bg-inv hover:text-invC transition-colors shadow-sm" aria-label="Вперёд">
+            <button id="pmNext" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-cream/90 border border-ink/10 grid place-items-center hover:bg-ink hover:text-cream transition-colors shadow-sm" aria-label="Вперёд">
               <svg class="w-4 h-4" aria-hidden="true"><use href="#arrow-right"/></svg>
             </button>
-            <span id="pmCounter" class="absolute bottom-2.5 right-2.5 bg-inv/70 text-invC text-[11px] font-bold rounded-full px-2.5 py-1">1/1</span>
+            <span id="pmCounter" class="absolute bottom-2.5 right-2.5 bg-ink/70 text-cream text-[11px] font-bold rounded-full px-2.5 py-1">1/1</span>
           </div>
           <div id="pmThumbs" class="grid grid-cols-3 gap-2 md:gap-3 mt-3"></div>
         </div>
@@ -273,7 +245,7 @@ body, header, .pmodal-panel, #productGrid .product-card, #searchInput { transiti
           <div class="flex items-center gap-3 mt-3">
             <span id="pmPrice" class="text-xl font-extrabold"></span>
             <span id="pmOld" class="hidden text-olive line-through text-sm"></span>
-            <span id="pmSale" class="hidden bg-clay text-invC text-[11px] font-bold rounded-full px-2.5 py-1"></span>
+            <span id="pmSale" class="hidden bg-clay text-cream text-[11px] font-bold rounded-full px-2.5 py-1"></span>
           </div>
           <p id="pmDesc" class="text-ink/70 text-sm leading-relaxed mt-4"></p>
           <ul id="pmSpecs" class="mt-5 space-y-2 text-sm text-ink/70 border-t border-ink/10 pt-4"></ul>
@@ -290,7 +262,7 @@ body, header, .pmodal-panel, #productGrid .product-card, #searchInput { transiti
             <p id="pmSizeError" class="hidden text-clay text-xs mt-2 font-semibold"><span data-i18n="sizeError">Сначала выберите размер</span></p>
           </div>
 
-          <button id="pmOrder" class="mt-7 w-full bg-inv text-invC rounded-full py-4 font-semibold hover:bg-clay transition-colors flex items-center justify-center gap-2">
+          <button id="pmOrder" class="mt-7 w-full bg-ink text-cream rounded-full py-4 font-semibold hover:bg-clay transition-colors flex items-center justify-center gap-2">
             <span data-i18n="orderBtn">Заказать</span> · <span id="pmOrderPrice"></span>
           </button>
         </div>
@@ -345,8 +317,8 @@ const I18N = {
     contactsTitle: 'Контакты',
     infoTitle: 'Инфо',
     footerTagline: 'Магазин обуви. Новые поступления каждую неделю.',
-    addressText: 'Душанбе, Б. Корвон, д. 10, кв. 6 (подвал)',
-    deliveryText: 'Доставка по всей РТ',
+    addressText: 'г. Душанбе, р. Фирдавси — рынок «Корвон», 10-е ворота, 6-й ряд',
+    deliveryText: 'Доставляем по всей Республике Таджикистан',
     copyright: 'STEP style.tj — все права защищены',
     toastCopy: 'Текст заказа скопирован — вставь в директ', toastCopyCard: 'Фото и текст заказа скопированы — вставь в директ', toastPhoto: 'Фото заказа сохранено — прикрепи его в директ',
     toastSent: 'Заказ отправлен в {via}',
@@ -374,8 +346,8 @@ const I18N = {
     contactsTitle: 'Тамос',
     infoTitle: 'Маълумот',
     footerTagline: 'Мағозаи пойафзол. Ҳар ҳафта молҳои нав.',
-    addressText: 'Душанбе, кӯч. Корвон, х. 10, ошёнаи 6 (таҳхона)',
-    deliveryText: 'Дар тамоми Ҷумҳурии Тоҷикистон интиқол медиҳем',
+    addressText: 'ш. Душанбе, н. Фирдавси — Бозори «Корвон», дарвозаи 10-ум, 6-ум қатор',
+    deliveryText: 'Ба тамоми Ҷумҳурии Тоҷикистон бурда мерасонем',
     copyright: 'STEP style.tj — ҳама ҳуқуқҳо ҳифз шудаанд',
     toastCopy: 'Матни фармоиш нусхабардорӣ шуд — ба директ гузоред', toastCopyCard: 'Акс ва матни фармоиш нусхабардорӣ шуд — ба директ гузоред', toastPhoto: 'Акси фармоиш нигоҳ дошта шуд — онро ба директ васл кунед',
     toastSent: 'Фармоиш ба {via} фиристода шуд',
@@ -518,8 +490,8 @@ function lockScroll() { document.body.style.overflow = (modalOpen || orderOpen) 
 // ---------- Каталог ----------
 function badgesHTML(p) {
   const arr = [];
-  if (p.badge === 'new') arr.push([t('badgeNew'), 'bg-inv text-invC']);
-  if (p.badge === 'hit') arr.push([t('badgeHit'), 'bg-clay text-invC']);
+  if (p.badge === 'new') arr.push([t('badgeNew'), 'bg-ink text-cream']);
+  if (p.badge === 'hit') arr.push([t('badgeHit'), 'bg-clay text-cream']);
   if (p.oldPrice) arr.push([`−${Math.round((1 - p.price / p.oldPrice) * 100)}%`, 'bg-cream text-ink']);
   if (!arr.length) return '';
   return `<div class="absolute top-2 left-2 md:top-3 md:left-3 z-10 flex flex-col items-start gap-1.5">${
@@ -529,7 +501,7 @@ function badgesHTML(p) {
 
 function cardHTML(p, i) {
   return `
-  <article class="product-card reveal-item group cursor-pointer bg-sand rounded-2xl md:rounded-3xl border border-ink/10 overflow-hidden transition-all duration-300 hover:shadow-[0_16px_40px_-16px_rgba(27,22,17,0.3)] hover:-translate-y-1" data-id="${p.id}" style="transition-delay:${(i % 8) * 40}ms">
+  <article class="product-card reveal-item group cursor-pointer bg-white rounded-2xl md:rounded-3xl border border-ink/10 overflow-hidden transition-all duration-300 hover:shadow-[0_16px_40px_-16px_rgba(27,22,17,0.3)] hover:-translate-y-1" data-id="${p.id}" style="transition-delay:${(i % 8) * 40}ms">
     <div class="relative overflow-hidden aspect-square bg-sand">
       <img src="${photoUrl(p.sku, p.seed, 600, 800)}" alt="${p.name}" loading="lazy"
            onerror="this.onerror=null;this.src='${picsum(p.seed, 600, 800)}'"
@@ -543,7 +515,7 @@ function cardHTML(p, i) {
         <span class="font-extrabold text-sm md:text-lg">${fmt(p.price)}</span>
         ${p.oldPrice ? `<span class="text-[11px] md:text-xs text-olive line-through">${fmt(p.oldPrice)}</span>` : ''}
       </div>
-      <button class="mt-2.5 md:mt-4 w-full bg-inv text-invC rounded-full md:rounded-xl py-2 md:py-2.5 text-[11px] md:text-sm font-semibold flex items-center justify-center gap-1.5 hover:bg-clay transition-colors">
+      <button class="mt-2.5 md:mt-4 w-full bg-ink text-cream rounded-full md:rounded-xl py-2 md:py-2.5 text-[11px] md:text-sm font-semibold flex items-center justify-center gap-1.5 hover:bg-clay transition-colors">
         <svg class="w-3.5 h-3.5" aria-hidden="true"><use href="#cart"/></svg> ${t('orderBtn')}
       </button>
     </div>
@@ -579,8 +551,8 @@ function applyLang() {
   document.documentElement.lang = lang === 'ru' ? 'ru' : 'tg';
   document.querySelectorAll('.lang-btn').forEach(b => {
     const on = b.dataset.lang === lang;
-    b.classList.toggle('bg-inv', on);
-    b.classList.toggle('text-invC', on);
+    b.classList.toggle('bg-ink', on);
+    b.classList.toggle('text-cream', on);
     b.classList.toggle('text-ink/60', !on);
   });
   document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -644,7 +616,7 @@ function fillProduct(p) {
     `<button data-size="${s}" class="size-btn border border-ink/20 rounded-xl py-2.5 text-sm font-semibold hover:border-ink transition-colors">${s}</button>`
   ).join('');
   if (selectedSize) document.querySelectorAll('#pmSizes .size-btn').forEach(x => {
-    if (x.dataset.size === selectedSize) x.classList.add('bg-inv', 'text-invC', 'border-ink');
+    if (x.dataset.size === selectedSize) x.classList.add('bg-ink', 'text-cream', 'border-ink');
   });
   $('#pmSizeError').classList.add('hidden');
   $('#pmSizeTable').classList.add('hidden');
@@ -877,7 +849,7 @@ function finishOrder(via, copiedText = false) {
 // ---------- Тосты ----------
 function toast(msg, icon = 'check') {
   const el = document.createElement('div');
-  el.className = 'toast pointer-events-auto flex items-center gap-2.5 bg-inv text-invC rounded-full pl-4 pr-6 py-3 text-sm font-semibold shadow-xl';
+  el.className = 'toast pointer-events-auto flex items-center gap-2.5 bg-ink text-cream rounded-full pl-4 pr-6 py-3 text-sm font-semibold shadow-xl';
   el.innerHTML = `<svg class="w-4 h-4 text-clay shrink-0" aria-hidden="true"><use href="#${icon}"/></svg><span>${msg}</span>`;
   $('#toasts').appendChild(el);
   icons();
@@ -922,8 +894,8 @@ $('#pmSizes').addEventListener('click', (e) => {
   const b = e.target.closest('.size-btn');
   if (!b) return;
   selectedSize = b.dataset.size;
-  document.querySelectorAll('#pmSizes .size-btn').forEach(x => x.classList.remove('bg-inv', 'text-invC', 'border-ink'));
-  b.classList.add('bg-inv', 'text-invC', 'border-ink');
+  document.querySelectorAll('#pmSizes .size-btn').forEach(x => x.classList.remove('bg-ink', 'text-cream', 'border-ink'));
+  b.classList.add('bg-ink', 'text-cream', 'border-ink');
   $('#pmSizeError').classList.add('hidden');
 });
 
@@ -948,27 +920,6 @@ $('#langSwitch').addEventListener('click', (e) => {
   applyLang();
 });
 
-// ---------- Тема: тёмная / светлая ----------
-function applyTheme(dark) {
-  document.documentElement.classList.toggle('dark', dark);
-  if (typeof localStorage !== 'undefined') localStorage.setItem('step_theme', dark ? 'dark' : 'light');
-  $('#iconSun').classList.toggle('hidden', dark);
-  $('#iconMoon').classList.toggle('hidden', !dark);
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.content = dark ? '#17130F' : '#1B1611';
-}
-function initTheme() {
-  let dark = false;
-  if (typeof localStorage !== 'undefined') {
-    const saved = localStorage.getItem('step_theme');
-    if (saved) dark = saved === 'dark';
-  }
-  applyTheme(dark);
-}
-$('#themeToggle').addEventListener('click', () => {
-  applyTheme(!document.documentElement.classList.contains('dark'));
-});
-
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   if (orderOpen) closeOrderModal();
@@ -985,7 +936,6 @@ window.addEventListener('scroll', () => {
 applyLang();
 renderCatalog();
 icons();
-initTheme();
 $('#year').textContent = new Date().getFullYear();
 
 $('#footerWa').href = `https://wa.me/${WHATSAPP_NUMBER}`;
