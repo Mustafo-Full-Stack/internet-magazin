@@ -698,22 +698,9 @@ function closeOrderModal() {
 
 async function sendViaWhatsApp() {
   const p = currentProduct, text = buildOrderText(p, selectedSize);
-  const fallbackWa = () => {
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
-    finishOrder('WhatsApp');
-  };
-  try {
-    const url = photoUrl(p.sku, p.seed, 1080, 1350);
-    const blob = await buildOrderCard(p, text, url);
-    const file = new File([blob], 'zakaz-step-style.png', { type: 'image/png' });
-    if (typeof navigator.canShare === 'function' && navigator.canShare({ files: [file], text })) {
-      closeOrderModal();
-      await navigator.share({ files: [file], title: t('orderNew'), text });
-      toast(t('toastSent').replace('{via}', 'WhatsApp'), 'check');
-      return;
-    }
-  } catch (e) { /* шир-лист отменён или недоступен — открываем чат с текстом */ }
-  fallbackWa();
+  closeOrderModal();
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
+  finishOrder('WhatsApp');
 }
 
 /* ============================================================
