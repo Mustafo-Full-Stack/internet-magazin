@@ -1496,18 +1496,15 @@ function getPeriodData() {
 // не попасть ни одной записи месячной давности при выбранном периоде "1 год").
 // Теперь график всегда показывает суммы ПО ДНЯМ внутри периода.
 function aggregateByDay(entries) {
-  // Если ВСЕ записи приходятся на один календарный день — группируем по ЧАСАМ,
-  // чтобы в течение дня была видна настоящая линия динамики, а не одна точка.
-  // Если дней несколько — группируем по дням.
-  const daysSet = new Set(entries.map(e => (e.date || '').slice(0, 10)).filter(Boolean));
-  const byHour = daysSet.size < 2;
-  const key = e => (e.date || '').slice(0, byHour ? 13 : 10);
-  const map = new Map(); // bucket -> { date, in, out }
+  // Группировка по календарным дням: столько точек, сколько уникальных дней
+  // с данными. Если за период меньше двух дней — renderIncomeChart() сам
+  // переключится в детальный режим и построит график по отдельным операциям.
+  const map = new Map(); // '2026-09-18' -> { date, in, out }
   entries.forEach(e => {
-    const k = key(e);
-    if (!k) return;
-    if (!map.has(k)) map.set(k, { date: k, in: 0, out: 0 });
-    const rec = map.get(k);
+    const day = (e.date || '').slice(0, 10);
+    if (!day) return;
+    if (!map.has(day)) map.set(day, { date: day, in: 0, out: 0 });
+    const rec = map.get(day);
     if (e.kind === 'in') rec.in += Number(e.amount) || 0;
     else rec.out += Number(e.amount) || 0;
   });
@@ -1606,10 +1603,24 @@ function renderIncomeChart(data) {
   const container = $('#incomeChartWrapper');
   const labels = $('#incomeChartLabels');
 
-  // График строится по СУММАМ ЗА ДЕНЬ внутри выбранного периода, а не по
-  // последним 10 операциям — так линия реально отражает динамику периода,
-  // а не количество кликов "Сабт кардан" в конкретный день.
-  const daily = aggregateByDay(data.entries);
+  // По умолчанию строим по СУММАМ ЗА ДЕНЬ внутри выбранного периода.
+  let daily = aggregateByDay(data.entries);
+  // Если за весь период меньше 2 уникальных дней с данными — переключаемся
+  // в ДЕТАЛЬНЫЙ режим: рисуем по каждой отдельной операции внутри этого дня,
+  // по оси X подписываем время ЧЧ:ММ. Так продажи за один день дают
+  // настоящую линию динамики, а не одну точку.
+  let detailed = false;
+  if (daily.length < 2) {
+    detailed = true;
+    daily = [...data.entries]
+      .sort((a, b) => (String(a.date || '') + String(a.id)).localeCompare(String(b.date || '') + String(b.id)))
+      .map(r => ({
+        date: r.date || '',
+        in: r.kind === 'in' ? Number(r.amount) || 0 : 0,
+        out: r.kind === 'out' ? Number(r.amount) || 0 : 0,
+      }));
+  }
+
   // Если точек больше, чем разумно уместить на графике — берём равномерно
   // распределённую выборку по всему периоду, а не просто "последние N".
   const MAX_POINTS = 14;
@@ -1698,9 +1709,11 @@ function renderIncomeChart(data) {
     </svg>`;
 
   // Подписи дат под графиком — прореживаем, если точек много, чтобы не слипались.
+  // В детальном режиме подписываем время ЧЧ:ММ, в обычном — дату (ММ-ДД).
   const labelStep = Math.ceil(points.length / 6) || 1;
+  const labelOf = d => detailed ? (d.date || '').slice(11, 16) : (d.date || '').slice(5);
   labels.innerHTML = points.map((d, i) => `
-    <span class="truncate px-1 text-[10px] text-olive font-semibold" title="${d.date}">${i % labelStep === 0 ? d.date.slice(5) : ''}</span>
+    <span class="truncate px-1 text-[10px] text-olive font-semibold" title="${d.date}">${i % labelStep === 0 ? labelOf(d) : ''}</span>
   `).join('');
 }
 
