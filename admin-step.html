@@ -1496,12 +1496,18 @@ function getPeriodData() {
 // не попасть ни одной записи месячной давности при выбранном периоде "1 год").
 // Теперь график всегда показывает суммы ПО ДНЯМ внутри периода.
 function aggregateByDay(entries) {
-  const map = new Map(); // '2026-09-18' -> { date, in, out }
+  // Если ВСЕ записи приходятся на один календарный день — группируем по ЧАСАМ,
+  // чтобы в течение дня была видна настоящая линия динамики, а не одна точка.
+  // Если дней несколько — группируем по дням.
+  const daysSet = new Set(entries.map(e => (e.date || '').slice(0, 10)).filter(Boolean));
+  const byHour = daysSet.size < 2;
+  const key = e => (e.date || '').slice(0, byHour ? 13 : 10);
+  const map = new Map(); // bucket -> { date, in, out }
   entries.forEach(e => {
-    const day = (e.date || '').slice(0, 10);
-    if (!day) return;
-    if (!map.has(day)) map.set(day, { date: day, in: 0, out: 0 });
-    const rec = map.get(day);
+    const k = key(e);
+    if (!k) return;
+    if (!map.has(k)) map.set(k, { date: k, in: 0, out: 0 });
+    const rec = map.get(k);
     if (e.kind === 'in') rec.in += Number(e.amount) || 0;
     else rec.out += Number(e.amount) || 0;
   });
