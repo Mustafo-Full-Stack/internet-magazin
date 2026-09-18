@@ -413,9 +413,9 @@
       </div>
 
       <div class="bg-white rounded-2xl p-4 md:p-5 border border-ink/10 shadow-sm admin-card">
-        <p class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-olive" data-i18n="kpiVisitors">Ҳамаи меҳмонон</p>
-        <p id="statVisitorsCount" class="font-display font-black text-2xl md:text-3xl text-ink mt-1">0</p>
-        <p class="text-[11px] text-olive mt-1" data-i18n="kpiVisitorsSub">Визитҳо</p>
+        <p class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-olive" data-i18n="kpiSales">Ҳамаи фурӯшҳо</p>
+        <p id="statSalesCount" class="font-display font-black text-2xl md:text-3xl text-ink mt-1">0</p>
+        <p id="statAvgCheck" class="text-[11px] text-olive mt-1"></p>
       </div>
 
       <div class="bg-white rounded-2xl p-4 md:p-5 border border-ink/10 shadow-sm admin-card">
@@ -674,8 +674,9 @@ const ADMIN_I18N = {
     kpiTotalIncome: 'Даромади умумӣ',
     kpiAllTime: 'Ҳамаи давра',
     kpiPeriod: 'Дар давраи интихобшуда',
-    kpiVisitors: 'Ҳамаи меҳмонон',
-    kpiVisitorsSub: 'Визитҳо',
+    kpiSales: 'Ҳамаи фурӯшҳо',
+    avgCheck: 'Миёнаи чек',
+    avgCheckNone: 'Ҳанӯз фурӯш нест',
     kpiExpense: 'Минус (Хароҷот)',
     kpiExpenseSub: 'Хароҷоти умумӣ',
     kpiMonth: 'Даромад дар ин моҳ',
@@ -805,8 +806,9 @@ const ADMIN_I18N = {
     kpiTotalIncome: 'Общий доход',
     kpiAllTime: 'За все время',
     kpiPeriod: 'За выбранный период',
-    kpiVisitors: 'Всего посетители',
-    kpiVisitorsSub: 'Визиты',
+    kpiSales: 'Всего продаж',
+    avgCheck: 'Средний чек',
+    avgCheckNone: 'Продаж пока нет',
     kpiExpense: 'Минус (Расходы)',
     kpiExpenseSub: 'Всего расходов',
     kpiMonth: 'Доход за этот месяц',
@@ -1524,7 +1526,11 @@ function renderStats() {
   // KPI-карточки теперь строго соответствуют выбранному периоду.
   $('#statTotalIncome').textContent = fmt(data.totalIncome);
   $('#statTotalIncomeSub').textContent = periodActive ? t('kpiPeriod') : t('kpiAllTime');
-  $('#statVisitorsCount').textContent = data.visitors;
+  $('#statSalesCount').textContent = data.incomes.length;
+  const avgCheck = data.incomes.length ? Math.round(data.totalIncome / data.incomes.length) : 0;
+  $('#statAvgCheck').textContent = data.incomes.length
+    ? `${t('avgCheck')}: ${fmt(avgCheck)}`
+    : t('avgCheckNone');
   $('#statTotalExpense').textContent = fmt(data.totalExpense);
   $('#statTotalExpenseSub').textContent = periodActive ? t('kpiPeriod') : t('kpiExpenseSub');
 
