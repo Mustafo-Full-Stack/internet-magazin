@@ -1,14 +1,13 @@
 const TARGET = process.env.API_TARGET || 'https://webhost2026.pythonanywhere.com';
 
-module.exports = async (req, res) => {
-  const path = Array.isArray(req.query.path) ? req.query.path.join('/') : (req.query.path || '');
-  const targetUrl = TARGET + '/api/' + path + (req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '');
+module.exports = async function proxy(req, res) {
+  const targetUrl = TARGET + req.url;
 
   const headers = {};
-  ['content-type', 'authorization', 'x-order-token', 'accept'].forEach((h) => {
+  for (const h of ['content-type', 'authorization', 'x-order-token', 'accept']) {
     const v = req.headers[h];
     if (v) headers[h] = v;
-  });
+  }
 
   let body;
   if (req.method !== 'GET' && req.method !== 'HEAD') {
@@ -20,7 +19,11 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const upstream = await fetch(targetUrl, { method: req.method, headers, body: body && body.length ? body : undefined });
+    const upstream = await fetch(targetUrl, {
+      method: req.method,
+      headers,
+      body: body && body.length ? body : undefined,
+    });
     const text = await upstream.text();
     res.status(upstream.status);
     res.setHeader('content-type', upstream.headers.get('content-type') || 'application/json');
