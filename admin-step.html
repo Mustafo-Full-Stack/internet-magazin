@@ -435,13 +435,21 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- График доходов -->
       <div class="lg:col-span-2 bg-white rounded-3xl p-5 md:p-6 border border-ink/10 shadow-sm">
-        <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
           <h3 class="font-display font-bold text-base md:text-lg" data-i18n="chartTitle">Динамикаи даромад</h3>
           <div class="flex items-center gap-3 text-[10px] text-olive font-semibold">
             <span class="flex items-center gap-1.5"><i class="w-2.5 h-2.5 rounded-full inline-block bg-clay"></i> <span data-i18n="legendIncome">Даромад</span></span>
             <span class="flex items-center gap-1.5"><i class="w-2.5 h-2.5 rounded-full inline-block bg-red-500"></i> <span data-i18n="legendExpense">Хароҷот</span></span>
           </div>
         </div>
+
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          <button type="button" class="period-chip" data-period="1m" onclick="setStatsPeriod('1m')" data-i18n="period1m">1 моҳ</button>
+          <button type="button" class="period-chip" data-period="6m" onclick="setStatsPeriod('6m')" data-i18n="period6m">6 моҳ</button>
+          <button type="button" class="period-chip" data-period="1y" onclick="setStatsPeriod('1y')" data-i18n="period1y">1 сол</button>
+          <button type="button" class="period-chip" data-period="all" onclick="setStatsPeriod('all')" data-i18n="periodAll">Ҳама</button>
+        </div>
+
         <div id="incomeChartWrapper" class="h-48 flex items-end justify-between gap-2 pt-4 border-b border-ink/10"></div>
         <div id="incomeChartLabels" class="flex justify-between text-[10px] text-olive mt-2"></div>
       </div>
