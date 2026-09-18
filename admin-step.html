@@ -1660,6 +1660,9 @@ function renderIncomeChart(data) {
   }));
 
   const COLOR_IN = '#D9541E', COLOR_OUT = '#DC2626';
+  const single = points.length === 1;
+  const labelInY = a => Math.min(H - 6, Math.max(padT + 10, py(a) - 9));
+  const labelOutY = a => Math.min(H - 4, Math.max(padT + 10, py(a) + 16));
 
   container.innerHTML = `
     <svg width="${W}" height="${H}" class="w-full block" role="img" aria-label="График доходов и расходов">
@@ -1677,11 +1680,14 @@ function renderIncomeChart(data) {
         <line x1="${padL}" y1="${g.y}" x2="${W - padR}" y2="${g.y}" stroke="#1B1611" stroke-opacity="0.07" stroke-width="1"/>
         <text x="${padL - 8}" y="${g.y + 4}" text-anchor="end" font-size="10.5" fill="#7A7263">${fmt(g.val)}</text>
       `).join('')}
+      ${single ? `<line x1="${padL}" y1="${py(Math.max(points[0].in, points[0].out))}" x2="${W - padR}" y2="${py(Math.max(points[0].in, points[0].out))}" stroke="#1B1611" stroke-opacity="0.12" stroke-width="1.5" stroke-dasharray="4 4"/>` : ''}
       ${buildLine(d => d.out, COLOR_OUT, 'stepAreaGradOut')}
       ${buildLine(d => d.in, COLOR_IN, 'stepAreaGrad')}
       ${points.map((d, i) => `
-        ${d.in > 0 ? `<circle cx="${px(i)}" cy="${py(d.in)}" r="4" fill="#FFFFFF" stroke="${COLOR_IN}" stroke-width="2.5"><title>${d.date} — +${fmt(d.in)}</title></circle>` : ''}
-        ${d.out > 0 ? `<circle cx="${px(i)}" cy="${py(d.out)}" r="4" fill="#FFFFFF" stroke="${COLOR_OUT}" stroke-width="2.5"><title>${d.date} — −${fmt(d.out)}</title></circle>` : ''}
+        ${d.in > 0 ? `<circle cx="${px(i)}" cy="${py(d.in)}" r="${single ? 6 : 4}" fill="#FFFFFF" stroke="${COLOR_IN}" stroke-width="2.5"><title>${d.date} — +${fmt(d.in)}</title></circle>` : ''}
+        ${d.out > 0 ? `<circle cx="${px(i)}" cy="${py(d.out)}" r="${single ? 6 : 4}" fill="#FFFFFF" stroke="${COLOR_OUT}" stroke-width="2.5"><title>${d.date} — −${fmt(d.out)}</title></circle>` : ''}
+        ${d.in > 0 ? `<text x="${px(i)}" y="${labelInY(d.in)}" text-anchor="middle" font-size="10" font-weight="bold" fill="${COLOR_IN}">+${fmt(d.in)}</text>` : ''}
+        ${d.out > 0 ? `<text x="${px(i)}" y="${labelOutY(d.out)}" text-anchor="middle" font-size="10" font-weight="bold" fill="${COLOR_OUT}">−${fmt(d.out)}</text>` : ''}
       `).join('')}
     </svg>`;
 
