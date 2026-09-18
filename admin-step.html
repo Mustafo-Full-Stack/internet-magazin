@@ -413,9 +413,15 @@
       </div>
 
       <div class="bg-white rounded-2xl p-4 md:p-5 border border-ink/10 shadow-sm admin-card">
-        <p class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-olive" data-i18n="kpiOrders">Фармоишҳо дар WhatsApp</p>
-        <p id="statOrdersCount" class="font-display font-black text-2xl md:text-3xl text-ink mt-1">0</p>
-        <p class="text-[11px] text-olive mt-1" data-i18n="kpiClicks">Кликҳои харидорон</p>
+        <p class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-olive" data-i18n="kpiVisitors">Ҳамаи меҳмонон</p>
+        <p id="statVisitorsCount" class="font-display font-black text-2xl md:text-3xl text-ink mt-1">0</p>
+        <p class="text-[11px] text-olive mt-1" data-i18n="kpiVisitorsSub">Визитҳо</p>
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 md:p-5 border border-ink/10 shadow-sm admin-card">
+        <p class="text-[10px] md:text-xs font-bold uppercase tracking-wider text-olive" data-i18n="kpiExpense">Минус (Хароҷот)</p>
+        <p id="statTotalExpense" class="font-display font-black text-2xl md:text-3xl text-red-600 mt-1">0 смн</p>
+        <p class="text-[11px] text-olive mt-1" data-i18n="kpiExpenseSub">Хароҷоти умумӣ</p>
       </div>
 
       <div class="bg-white rounded-2xl p-4 md:p-5 border border-ink/10 shadow-sm admin-card">
@@ -429,9 +435,12 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- График доходов -->
       <div class="lg:col-span-2 bg-white rounded-3xl p-5 md:p-6 border border-ink/10 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
           <h3 class="font-display font-bold text-base md:text-lg" data-i18n="chartTitle">Динамикаи даромад</h3>
-          <span class="text-xs text-olive font-semibold" data-i18n="chartSub">Фурӯшҳои охирин</span>
+          <div class="flex items-center gap-3 text-[10px] text-olive font-semibold">
+            <span class="flex items-center gap-1.5"><i class="w-2.5 h-2.5 rounded-full inline-block bg-clay"></i> <span data-i18n="legendIncome">Даромад</span></span>
+            <span class="flex items-center gap-1.5"><i class="w-2.5 h-2.5 rounded-full inline-block bg-red-500"></i> <span data-i18n="legendExpense">Хароҷот</span></span>
+          </div>
         </div>
         <div id="incomeChartWrapper" class="h-48 flex items-end justify-between gap-2 pt-4 border-b border-ink/10"></div>
         <div id="incomeChartLabels" class="flex justify-between text-[10px] text-olive mt-2"></div>
@@ -440,6 +449,15 @@
       <!-- История последних записей -->
       <div class="bg-white rounded-3xl p-5 md:p-6 border border-ink/10 shadow-sm flex flex-col">
         <h3 class="font-display font-bold text-base mb-3" data-i18n="incomesHistory">Таърихи фурӯшҳо</h3>
+
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          <button type="button" class="period-chip" data-period="1m" onclick="setStatsPeriod('1m')" data-i18n="period1m">1 моҳ</button>
+          <button type="button" class="period-chip" data-period="6m" onclick="setStatsPeriod('6m')" data-i18n="period6m">6 моҳ</button>
+          <button type="button" class="period-chip" data-period="1y" onclick="setStatsPeriod('1y')" data-i18n="period1y">1 сол</button>
+          <button type="button" class="period-chip" data-period="all" onclick="setStatsPeriod('all')" data-i18n="periodAll">Ҳама</button>
+        </div>
+
+        <div id="historySummary" class="mb-3"></div>
         <div id="incomesList" class="space-y-2.5 overflow-y-auto max-h-64 flex-1 text-xs"></div>
       </div>
     </div>
@@ -476,9 +494,20 @@
   <div id="incomeModalOverlay" class="modal-overlay absolute inset-0 bg-ink/60 backdrop-blur-sm" onclick="closeIncomeModal()"></div>
   <div id="incomeModalBox" class="modal-container relative w-full max-w-sm bg-white rounded-3xl p-6 border border-ink/10 shadow-2xl z-10">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="font-display font-bold text-lg" data-i18n="incomeModalTitle">Сабти даромад</h3>
+      <h3 class="font-display font-bold text-lg" data-i18n="incomeModalTitle">Сабти даромад / хароҷот</h3>
       <button onclick="closeIncomeModal()" class="w-8 h-8 rounded-full border border-ink/10 grid place-items-center hover:bg-ink hover:text-cream transition-colors">
         <svg class="w-4 h-4"><use href="#x"/></svg>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-sand/40 border border-ink/10 mb-4">
+      <button type="button" id="typeInBtn" onclick="setIncomeType('in')"
+        class="rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1 bg-clay text-cream shadow-sm transition-all">
+        <span class="text-sm leading-none">+</span> <span data-i18n="typeIn">Даромад</span>
+      </button>
+      <button type="button" id="typeOutBtn" onclick="setIncomeType('out')"
+        class="rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1 text-olive transition-all">
+        <span class="text-sm leading-none">−</span> <span data-i18n="typeOut">Хароҷот</span>
       </button>
     </div>
 
@@ -495,7 +524,7 @@
         <label class="block text-xs font-bold uppercase tracking-wider text-olive mb-1" data-i18n="incomeNoteLabel">Эзоҳ (ихтиёрӣ)</label>
         <input id="incomeNote" type="text" data-i18n-ph="incomeNotePh" placeholder="Мисол: харидори бозори Корвон" class="w-full bg-sand/30 border border-ink/15 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-ink transition-colors">
       </div>
-      <button type="submit" class="w-full bg-clay text-cream font-bold rounded-xl py-3 hover:bg-ink transition-all duration-300 flex items-center justify-center gap-1.5 text-sm mt-4 active:scale-[0.99]">
+      <button type="submit" id="incomeSubmitBtn" class="w-full bg-clay text-cream font-bold rounded-xl py-3 hover:bg-ink transition-all duration-300 flex items-center justify-center gap-1.5 text-sm mt-4 active:scale-[0.99]">
         <svg class="w-4 h-4"><use href="#check"/></svg> <span data-i18n="saveBtn">Сабт кардан</span>
       </button>
     </form>
@@ -633,33 +662,46 @@ const ADMIN_I18N = {
 
     statsTitle: 'Омор ва даромад',
     statsSub: 'Ҳисоботи фурӯш ва даромади умумӣ',
-    addIncomeBtn: '+ Сабти даромад / фурӯш',
+    addIncomeBtn: '+ Сабти даромад / хароҷот',
     kpiTotalIncome: 'Даромади умумӣ',
     kpiAllTime: 'Ҳамаи давра',
-    kpiOrders: 'Фармоишҳо дар WhatsApp',
-    kpiClicks: 'Кликҳои харидорон',
+    kpiVisitors: 'Ҳамаи меҳмонон',
+    kpiVisitorsSub: 'Визитҳо',
+    kpiExpense: 'Минус (Хароҷот)',
+    kpiExpenseSub: 'Хароҷоти умумӣ',
     kpiMonth: 'Даромад дар ин моҳ',
     kpiMonthSub: 'Моҳи ҷорӣ',
-    chartTitle: 'Динамикаи даромад',
+    chartTitle: 'Динамикаи даромад ва хароҷот',
     chartSub: 'Фурӯшҳои охирин',
     chartEmpty: 'Барои сохтани диаграмма даромадро сабт намоед',
+    legendIncome: 'Даромад',
+    legendExpense: 'Хароҷот',
     incomesHistory: 'Таърихи фурӯшҳо',
-    noIncomes: 'Ҳанӯз фурӯше сабт нашудааст',
+    noIncomes: 'Ҳанӯз сабтҳо нашудааст',
     saleDefault: 'Фурӯши мол',
-
-    notesTitle: 'Қайдҳои мудир',
-    notesSub: 'Қайдҳои фаврӣ, супоришҳо ва рақамҳои муштариён',
-    notePh: 'Қайди нав ворид кунед (масалан: ба анбор занг занед)...',
-    addNoteBtn: 'Илова',
-    noNotes: 'Ҳанӯз ягон қайд нест',
-
-    incomeModalTitle: 'Сабти даромад',
+    periodAll: 'Ҳама',
+    period1m: '1 моҳ',
+    period6m: '6 моҳ',
+    period1y: '1 сол',
+    balance: 'Баланс',
+    showAllBtn: 'Нишон додани ҳама',
+    typeIn: 'Даромад',
+    typeOut: 'Хароҷот',
+    incomeModalTitle: 'Сабти даромад / хароҷот',
     incomeAmountLabel: 'Маблағ (смн) *',
     incomeProductLabel: 'Номи мол ё шарҳ',
     incomeProductPh: 'Мисол: AXEL 42 андоза',
     incomeNoteLabel: 'Эзоҳ (ихтиёрӣ)',
     incomeNotePh: 'Мисол: харидори бозори Корвон',
     saveBtn: 'Сабт кардан',
+toastIncomeRecorded: '+{amt} сабт шуд!',
+    toastExpenseRecorded: '−{amt} сабт шуд!',
+
+    notesTitle: 'Қайдҳои мудир',
+    notesSub: 'Қайдҳои фаврӣ, супоришҳо ва рақамҳои муштариён',
+    notePh: 'Қайди нав ворид кунед (масалан: ба анбор занг занед)...',
+    addNoteBtn: 'Илова',
+    noNotes: 'Ҳанӯз ягон қайд нест',
 
     deleteModalTitle: 'Нест кардани мол?',
     deleteModalText: 'Оё мутмаин ҳастед, ки ин молро аз мағоза нест кардан мехоҳед?',
@@ -748,20 +790,32 @@ const ADMIN_I18N = {
     saveProductBtn: 'Сохранить товар',
 
     statsTitle: 'Статистика и доход',
-    statsSub: 'Отчет по продажам и общему доходу',
-    addIncomeBtn: '+ Запись дохода / продажи',
+    statsSub: 'Отчет по продажам и расходам',
+    addIncomeBtn: '+ Запись дохода / расхода',
     kpiTotalIncome: 'Общий доход',
     kpiAllTime: 'За все время',
-    kpiOrders: 'Заказы в WhatsApp',
-    kpiClicks: 'Клики покупателей',
+    kpiVisitors: 'Всего посетители',
+    kpiVisitorsSub: 'Визиты',
+    kpiExpense: 'Минус (Расходы)',
+    kpiExpenseSub: 'Всего расходов',
     kpiMonth: 'Доход за этот месяц',
     kpiMonthSub: 'Текущий месяц',
-    chartTitle: 'Динамика дохода',
+    chartTitle: 'Динамика дохода и расходов',
     chartSub: 'Последние продажи',
     chartEmpty: 'Добавьте записи дохода для построения графика',
+    legendIncome: 'Доход',
+    legendExpense: 'Расход',
     incomesHistory: 'История продаж',
     noIncomes: 'Пока нет записей о продажах',
     saleDefault: 'Продажа обуви',
+    periodAll: 'Всё',
+    period1m: '1 мес',
+    period6m: '6 мес',
+    period1y: '1 год',
+    balance: 'Баланс',
+    showAllBtn: 'Показать всех',
+    typeIn: 'Доход',
+    typeOut: 'Расход',
 
     notesTitle: 'Заметки руководителя',
     notesSub: 'Быстрые заметки, поручения и важные контакты',
@@ -769,7 +823,7 @@ const ADMIN_I18N = {
     addNoteBtn: 'Добавить',
     noNotes: 'Заметок пока нет',
 
-    incomeModalTitle: 'Запись дохода',
+    incomeModalTitle: 'Запись дохода / расхода',
     incomeAmountLabel: 'Сумма (смн) *',
     incomeProductLabel: 'Товар или комментарий',
     incomeProductPh: 'Например: AXEL 42 размер',
@@ -789,7 +843,8 @@ const ADMIN_I18N = {
     toastUpdated: 'Товар успешно обновлен!',
     toastDeleted: 'Товар удален',
     toastSpecsLoaded: 'Шаблон характеристик применен',
-    toastIncomeRecorded: '+{amt} записано!'
+    toastIncomeRecorded: '+{amt} записано!',
+    toastExpenseRecorded: '−{amt} записано!'
   }
 };
 
@@ -798,7 +853,7 @@ if (!ADMIN_I18N[adminLang]) adminLang = 'tj';
 const t = (k) => (ADMIN_I18N[adminLang][k] != null ? ADMIN_I18N[adminLang][k] : (ADMIN_I18N.tj[k] || ''));
 
 let currentProducts = [];
-let currentStats = { totalIncome: 0, whatsappOrders: 0, incomes: [], clicks: [] };
+let currentStats = { totalIncome: 0, totalExpense: 0, whatsappOrders: 0, incomes: [], expenses: [], clicks: [] };
 let currentNotes = [];
 let pendingPhotos = [];
 let productToDeleteId = null;
@@ -1337,9 +1392,40 @@ $('#confirmDeleteBtn').addEventListener('click', async () => {
 });
 
 // 9. Статистика и учет доходов
+const daysAgo = n => {
+  const d = new Date(Date.now() - n * 86400000);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+const periodCut = () =>
+  statsPeriod === '1m' ? daysAgo(30) :
+  statsPeriod === '6m' ? daysAgo(182) :
+  statsPeriod === '1y' ? daysAgo(365) : '';
+
+const periodEntries = () => {
+  const cut = periodCut();
+  const inRange = e => !cut || (e.date || '').slice(0, 10) >= cut;
+  return [
+    ...(currentStats.incomes || []).filter(inRange).map(r => ({ ...r, kind: 'in' })),
+    ...(currentStats.expenses || []).filter(inRange).map(r => ({ ...r, kind: 'out' })),
+  ].sort((a, b) => ((b.date || '') + String(b.id)).localeCompare((a.date || '') + String(b.id)));
+};
+
+function setStatsPeriod(p) {
+  statsPeriod = p;
+  statsShowAll = false;
+  renderStats();
+}
+
+function showAllHistory() {
+  statsShowAll = true;
+  renderStats();
+}
+
 function renderStats() {
   $('#statTotalIncome').textContent = fmt(currentStats.totalIncome || 0);
-  $('#statOrdersCount').textContent = currentStats.whatsappOrders || 0;
+  $('#statVisitorsCount').textContent = (currentStats.clicks || []).length;
+  $('#statTotalExpense').textContent = fmt(currentStats.totalExpense || 0);
 
   // Доход за текущий месяц
   const now = new Date();
@@ -1349,25 +1435,50 @@ function renderStats() {
     .reduce((s, x) => s + (x.amount || 0), 0);
   $('#statMonthIncome').textContent = fmt(monthInc);
 
-  // Список последних доходов
+  // Кнопки периода
+  document.querySelectorAll('.period-chip').forEach(ch => {
+    const on = ch.dataset.period === statsPeriod;
+    ch.className = 'period-chip px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ' + (on ? 'bg-ink text-cream' : 'text-olive hover:bg-sand/60');
+  });
+
+  // Сводка за выбранный период
+  const entries = periodEntries();
+  const sum = arr => arr.reduce((s, x) => s + (x.amount || 0), 0);
+  const totalIn = (currentStats.incomes || []).filter(e => !periodCut() || (e.date || '').slice(0, 10) >= periodCut()).reduce((s, x) => s + (x.amount || 0), 0);
+  const totalOut = (currentStats.expenses || []).filter(e => !periodCut() || (e.date || '').slice(0, 10) >= periodCut()).reduce((s, x) => s + (x.amount || 0), 0);
+  $('#historySummary').innerHTML = `
+    <div class="flex items-center justify-between rounded-xl bg-sand/40 border border-ink/10 px-3 py-2 text-[11px] font-bold flex-wrap gap-1">
+      <span class="text-clay">${t('legendIncome')}: <b>+${fmt(totalIn)}</b></span>
+      <span class="text-red-600">${t('legendExpense')}: <b>−${fmt(totalOut)}</b></span>
+      <span class="text-ink">${t('balance')}: <b class="${totalIn - totalOut < 0 ? 'text-red-600' : 'text-emerald-700'}">${fmt(totalIn - totalOut)}</b></span>
+    </div>`;
+
+  // История
   const list = $('#incomesList');
-  if (!currentStats.incomes || !currentStats.incomes.length) {
+  if (!entries.length) {
     list.innerHTML = `<p class="text-olive text-center py-6">${t('noIncomes')}</p>`;
   } else {
-    list.innerHTML = currentStats.incomes.slice(0, 20).map(inc => `
+    const shown = statsShowAll ? entries : entries.slice(0, 20);
+    list.innerHTML = shown.map(inc => {
+      const isOut = inc.kind === 'out';
+      return `
       <div class="flex items-center justify-between p-2.5 rounded-xl bg-sand/30 border border-ink/5 transition-all hover:bg-sand/50">
-        <div>
-          <p class="font-bold text-ink">${inc.product || t('saleDefault')}</p>
+        <div class="min-w-0">
+          <p class="font-bold text-ink truncate">${inc.product || t('saleDefault')}</p>
           <p class="text-[10px] text-olive">${inc.date || ''} ${inc.note ? '• ' + inc.note : ''}</p>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="font-extrabold text-clay text-sm">+${fmt(inc.amount)}</span>
-          <button onclick="deleteIncome(${inc.id})" class="text-olive hover:text-clay p-1 transition-colors" title="${t('deleteBtn')}">
+        <div class="flex items-center gap-2 shrink-0">
+          <span class="font-extrabold text-sm ${isOut ? 'text-red-600' : 'text-clay'}">${isOut ? '−' : '+'}${fmt(inc.amount)}</span>
+          <button onclick="deleteStat(${inc.id}, '${inc.kind}')" class="text-olive hover:text-clay p-1 transition-colors" title="${t('deleteBtn')}">
             <svg class="w-3.5 h-3.5"><use href="#x"/></svg>
           </button>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('') +
+    (entries.length > 20 && !statsShowAll
+      ? `<button onclick="showAllHistory()" class="w-full mt-2 text-[11px] font-bold text-clay hover:underline py-1 transition-colors">${t('showAllBtn')} (${entries.length})</button>`
+      : '');
   }
 
   renderIncomeChart();
@@ -1376,9 +1487,11 @@ function renderStats() {
 function renderIncomeChart() {
   const container = $('#incomeChartWrapper');
   const labels = $('#incomeChartLabels');
-  const incomes = (currentStats.incomes || []).slice(0, 10).reverse();
 
-  if (!incomes.length) {
+  const entries = periodEntries();
+  const last = entries.slice(0, 10).reverse();
+
+  if (!entries.length) {
     container.innerHTML = `<div class="m-auto text-xs text-olive">${t('chartEmpty')}</div>`;
     labels.innerHTML = '';
     return;
@@ -1389,13 +1502,11 @@ function renderIncomeChart() {
   const padL = 44, padR = 12, padT = 14, padB = 8;
   const iw = W - padL - padR;
   const ih = H - padT - padB;
-  const max = Math.max(...incomes.map(x => x.amount), 1) * 1.15;
+  const max = Math.max(...entries.map(x => x.amount), 1) * 1.15;
 
   const clampV = a => Math.max(0, Math.min(a, max));
-  const px = i => padL + (incomes.length === 1 ? iw / 2 : (iw * i) / (incomes.length - 1));
+  const px = i => padL + (last.length === 1 ? iw / 2 : (iw * i) / (last.length - 1));
   const py = a => padT + ih - (clampV(a) / max) * ih;
-
-  const pts = incomes.map((inc, i) => [px(i), py(inc.amount)]);
 
   const smoothPath = p => {
     let d = `M${p[0][0]},${p[0][1]}`;
@@ -1409,45 +1520,84 @@ function renderIncomeChart() {
     return d;
   };
 
-  const line = smoothPath(pts);
-  const area = `${line} L${pts[pts.length - 1][0]},${padT + ih} L${pts[0][0]},${padT + ih} Z`;
+  const series = kind => last.map((e, i) => e.kind === kind ? [px(i), py(e.amount)] : null).filter(Boolean);
+
+  const build = (pts, color, gradId) => {
+    if (!pts.length) return '';
+    let out = '';
+    if (pts.length > 1) {
+      const line = smoothPath(pts);
+      const area = `${line} L${pts[pts.length - 1][0]},${padT + ih} L${pts[0][0]},${padT + ih} Z`;
+      out += `<path d="${area}" fill="url(#${gradId})"/>`;
+      out += `<path d="${line}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+    }
+    return out;
+  };
 
   const grid = [0, 1, 2, 3, 4].map(i => ({
     y: padT + (ih * i) / 4,
     val: Math.round(max - (max * i) / 4),
   }));
 
+  const COLOR_IN = '#D9541E', COLOR_OUT = '#DC2626';
+
   container.innerHTML = `
-    <svg width="${W}" height="${H}" class="w-full block" role="img" aria-label="График доходов">
+    <svg width="${W}" height="${H}" class="w-full block" role="img" aria-label="График доходов и расходов">
       <defs>
         <linearGradient id="stepAreaGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#D9541E" stop-opacity="0.35"/>
-          <stop offset="100%" stop-color="#D9541E" stop-opacity="0.03"/>
+          <stop offset="0%" stop-color="#D9541E" stop-opacity="0.32"/>
+          <stop offset="100%" stop-color="#D9541E" stop-opacity="0.02"/>
+        </linearGradient>
+        <linearGradient id="stepAreaGradOut" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#DC2626" stop-opacity="0.28"/>
+          <stop offset="100%" stop-color="#DC2626" stop-opacity="0.02"/>
         </linearGradient>
       </defs>
-      ${grid.map((g, i) => `
+      ${grid.map(g => `
         <line x1="${padL}" y1="${g.y}" x2="${W - padR}" y2="${g.y}" stroke="#1B1611" stroke-opacity="0.07" stroke-width="1"/>
         <text x="${padL - 8}" y="${g.y + 4}" text-anchor="end" font-size="10.5" fill="#7A7263">${fmt(g.val)}</text>
       `).join('')}
-      <path d="${area}" fill="url(#stepAreaGrad)"/>
-      <path d="${line}" fill="none" stroke="#D9541E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-      ${pts.map((p, i) => `
-        <line x1="${p[0]}" y1="${padT + ih}" x2="${p[0]}" y2="${p[1]}" stroke="#D9541E" stroke-opacity="0.16" stroke-width="1"/>
-        <circle cx="${p[0]}" cy="${p[1]}" r="4" fill="#FFFFFF" stroke="#D9541E" stroke-width="2.5">
-          <title>${incomes[i].date || ''} — +${fmt(incomes[i].amount)} смн</title>
-        </circle>
-      `).join('')}
+      ${build(series('out'), COLOR_OUT, 'stepAreaGradOut')}
+      ${build(series('in'), COLOR_IN, 'stepAreaGrad')}
+      ${last.map((e, i) => {
+        const color = e.kind === 'in' ? COLOR_IN : COLOR_OUT;
+        const sign = e.kind === 'in' ? '+' : '−';
+        return `
+        <line x1="${px(i)}" y1="${padT + ih}" x2="${px(i)}" y2="${py(e.amount)}" stroke="${color}" stroke-opacity="0.16" stroke-width="1" stroke-dasharray="2 3"/>
+        <circle cx="${px(i)}" cy="${py(e.amount)}" r="4" fill="#FFFFFF" stroke="${color}" stroke-width="2.5">
+          <title>${e.date || ''} — ${sign}${fmt(e.amount)} смн (${e.product || ''})</title>
+        </circle>`;
+      }).join('')}
     </svg>`;
 
-  labels.innerHTML = incomes.map(inc => `
-    <span class="truncate px-1 text-[10px] text-olive font-semibold" title="${inc.date}">${(inc.date || '').split(' ')[0] || '•'}</span>
+  labels.innerHTML = last.map(e => `
+    <span class="truncate px-1 text-[10px] text-olive font-semibold" title="${e.date}">${(e.date || '').split(' ')[0] || '•'}</span>
   `).join('');
+}
+
+let incomeMode = 'in';
+let statsPeriod = 'all';
+let statsShowAll = false;
+
+function setIncomeType(type) {
+  incomeMode = type === 'out' ? 'out' : 'in';
+  const btnIn = $('#typeInBtn'), btnOut = $('#typeOutBtn'), sub = $('#incomeSubmitBtn');
+  if (incomeMode === 'out') {
+    btnIn.className = 'rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1 text-olive transition-all';
+    btnOut.className = 'rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1 bg-red-600 text-cream shadow-sm transition-all';
+    sub.className = 'w-full bg-red-600 text-cream font-bold rounded-xl py-3 hover:bg-ink transition-all duration-300 flex items-center justify-center gap-1.5 text-sm mt-4 active:scale-[0.99]';
+  } else {
+    btnIn.className = 'rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1 bg-clay text-cream shadow-sm transition-all';
+    btnOut.className = 'rounded-xl py-2 text-xs font-bold flex items-center justify-center gap-1 text-olive transition-all';
+    sub.className = 'w-full bg-clay text-cream font-bold rounded-xl py-3 hover:bg-ink transition-all duration-300 flex items-center justify-center gap-1.5 text-sm mt-4 active:scale-[0.99]';
+  }
 }
 
 function openIncomeModal() {
   $('#incomeAmount').value = '';
   $('#incomeProduct').value = '';
   $('#incomeNote').value = '';
+  setIncomeType('in');
   const modal = $('#incomeModal');
   const overlay = $('#incomeModalOverlay');
   const box = $('#incomeModalBox');
@@ -1476,36 +1626,49 @@ $('#incomeForm').addEventListener('submit', async (e) => {
   const date = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
   const rec = { id: Date.now(), amount, product, note, date };
+  const isOut = incomeMode === 'out';
 
   try {
-    await fetch('/api/stats/income', {
+    await fetch(isOut ? '/api/stats/expense' : '/api/stats/income', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(rec)
     });
   } catch (_) {}
 
-  currentStats.totalIncome = (currentStats.totalIncome || 0) + amount;
-  currentStats.incomes = [rec, ...(currentStats.incomes || [])];
+  if (isOut) {
+    currentStats.totalExpense = (currentStats.totalExpense || 0) + amount;
+    currentStats.expenses = [rec, ...(currentStats.expenses || [])];
+  } else {
+    currentStats.totalIncome = (currentStats.totalIncome || 0) + amount;
+    currentStats.incomes = [rec, ...(currentStats.incomes || [])];
+  }
   localStorage.setItem('step_cached_stats', JSON.stringify(currentStats));
 
   closeIncomeModal();
-  toast(t('toastIncomeRecorded').replace('{amt}', fmt(amount)), 'check');
+  toast((isOut ? t('toastExpenseRecorded') : t('toastIncomeRecorded')).replace('{amt}', fmt(amount)), 'check');
   renderStats();
 });
 
-async function deleteIncome(id) {
+async function deleteStat(id, kind) {
+  const isOut = kind === 'out';
   try {
-    await fetch(`/api/stats/income?id=${id}`, { method: 'DELETE' });
+    await fetch(isOut ? `/api/stats/expense?id=${id}` : `/api/stats/income?id=${id}`, { method: 'DELETE' });
   } catch (_) {}
 
-  const item = (currentStats.incomes || []).find(x => x.id === id);
-  if (item) {
+  if (isOut) {
+    const item = (currentStats.expenses || []).find(x => x.id === id);
+    if (!item) return;
+    currentStats.totalExpense = Math.max(0, (currentStats.totalExpense || 0) - item.amount);
+    currentStats.expenses = (currentStats.expenses || []).filter(x => x.id !== id);
+  } else {
+    const item = (currentStats.incomes || []).find(x => x.id === id);
+    if (!item) return;
     currentStats.totalIncome = Math.max(0, (currentStats.totalIncome || 0) - item.amount);
-    currentStats.incomes = currentStats.incomes.filter(x => x.id !== id);
-    localStorage.setItem('step_cached_stats', JSON.stringify(currentStats));
-    renderStats();
+    currentStats.incomes = (currentStats.incomes || []).filter(x => x.id !== id);
   }
+  localStorage.setItem('step_cached_stats', JSON.stringify(currentStats));
+  renderStats();
 }
 
 // 10. Заметки

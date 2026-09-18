@@ -2,5 +2,7 @@
   "totalIncome": 0,
   "whatsappOrders": 0,
   "incomes": [],
-  "clicks": []
+  "clicks": [],
+  "totalExpense": 0,
+  "expenses": []
 }
