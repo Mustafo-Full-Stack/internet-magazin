@@ -10,29 +10,10 @@
 <meta property="og:description" content="Кроссовки, ботинки, классика и кэжуал. Новые поступления каждую неделю." />
 <meta property="og:type" content="website" />
 <meta property="og:locale" content="ru_RU" />
-<link rel="icon" type="image/png" sizes="256x256" href="uploads/logo/favicon.png">
-<link rel="apple-touch-icon" href="uploads/logo/favicon.png">
+<link rel="icon" type="image/png" sizes="256x256" href="/uploads/logo/favicon.png">
+<link rel="apple-touch-icon" href="/uploads/logo/favicon.png">
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          cream: '#F3EFE6',
-          ink:   '#1B1611',
-          clay:  '#D9541E',
-          sand:  '#E7E0D2',
-          olive: '#7A7263'
-        },
-        fontFamily: {
-          display: ['Unbounded', 'sans-serif'],
-          body: ['Manrope', 'sans-serif']
-        }
-      }
-    }
-  }
-</script>
+<link rel="stylesheet" href="/styles/tailwind.generated.css">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -284,6 +265,7 @@
 /* ↓↓↓ НАСТРОЙКИ — ПОМЕНЯЙ ПОД СЕБЯ ↓↓↓ */
 const WHATSAPP_NUMBER = '992172383030';  // код страны + номер, без +, пробелов и скобок
 const INSTAGRAM_USER  = 'step.styletj';  // юзернейм Instagram без @
+const ORDER_WEBHOOK   = 'https://webhost2026.pythonanywhere.com/api/order';  // сервер приёма заказов (PythonAnywhere)
 /* ↑↑↑ КОНЕЦ НАСТРОЕК ↑↑↑ */
 
 const CUR = 'смн';
@@ -721,6 +703,23 @@ async function sendViaWhatsApp() {
   } catch (_) {}
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank');
   finishOrder('WhatsApp');
+  sendOrderToBackend(p, selectedSize, text);
+}
+
+async function sendOrderToBackend(p, size, text) {
+  if (!ORDER_WEBHOOK || !p) return;
+  try {
+    const body = new FormData();
+    body.append('product', p.name);
+    body.append('sku', p.sku);
+    body.append('size', String(size));
+    body.append('price', String(p.price));
+    body.append('photo_url', absoluteUrl(photoUrl(p.sku, p.seed, 800, 1000)));
+    const cardUrl = photoUrl(p.sku, p.seed, 1080, 1350);
+    const blob = await buildOrderCard(p, text, cardUrl);
+    body.append('photo', blob, 'zakaz-step-style.png');
+    await fetch(ORDER_WEBHOOK, { method: 'POST', body });
+  } catch (e) { /* если сервер недоступен — заказ уже ушёл в WhatsApp */ }
 }
 
 /* ============================================================

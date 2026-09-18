@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/admin-step", "destination": "/admin-step.html" }
+    { "source": "/admin-step", "destination": "/admin-step.html" },
+    { "source": "/api/(.*)", "destination": "/api/$1" }
   ]
 }
